@@ -5,16 +5,19 @@ DONE na końcu - task skonczone
 
 # Mikołaj
 - research na temat sieci DONE
-    - wstepnie wiem co i jak
+    - wstepnie wiem co i jak DONE
 
 - Klasę sieci 
-    - zaczynam to robic
-    - zrobiłem 3 sieci - zwykla siec bez warstw konwolucyjnych i dwie na podstawie artykułów - parametry warstw do ogarnięcia ale struktura jest zgodna z teorią
+    - zaczynam to robic DONE
+    - zrobiłem 3 sieci - zwykla siec bez warstw konwolucyjnych i dwie na podstawie artykułów - parametry warstw do ogarnięcia ale struktura jest zgodna z teorią DONE
+    - klasa sieci dostosowana do zmian hiperparametrow DONE
+    - master klasa do dziedziczenia 
+    * - pretrained model Alexnet
 
-- algorytm uczenia forward-backward
-    - zaimplementowane od razu w klasie
+- algorytm uczenia forward-backward DONE
+    - zaimplementowane od razu w klasie DONE
 
-* - do ogarnięcia połaczenie klasy danych z modelem
+- do ogarnięcia połaczenie klasy danych z modelem DONE
 
 # Janek
 - augmentacją danych 
