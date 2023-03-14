@@ -20,7 +20,7 @@ DONE na końcu - task skonczone
 - do ogarnięcia połaczenie klasy danych z modelem DONE
 
 # Janek
-- augmentacją danych 
+- augmentacją danych DONE
 
 - przygotowaniem hiperparametrów / algorytmu szukania hiperparametrów
 
@@ -39,8 +39,8 @@ DONE na końcu - task skonczone
         - ilosc warstw konwolucyjnych?
 
 •Investigate influence of at least X data augmentation techniques from the followinggroups:
-    •Standard operations (where x=3)
-    •More advanced data augmentation techniques like mixup, cutmix, cutout (where x=1)
+    -Standard operations (where x=3) DONE
+    -More advanced data augmentation techniques like mixup, cutmix, cutout (where x=1) DONE
 
 •Consider application of ensemble (hard/soft voting, stacking)
 
