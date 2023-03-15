@@ -197,10 +197,10 @@ cifar_val = CifarDataset(root_dir = VAL_DIR, labels=VAL_LABELS,
                          transform=transformer, class_dict=CLASS_DICT)
 
 # Simple augmentation technique
-transformer1 = transforms.Compose([
+transformer1 = transforms.Compose([transforms.Pad(padding=(4, 4, 4, 4), fill=0, padding_mode='constant'),
                                   transforms.RandomRotation(degrees=(-30,30)),
                                   transforms.ColorJitter(brightness=0.4, contrast=0.4, saturation=0.4, hue=0.1),
-                                  transforms.RandomCrop(int(IMG_SIZE * 0.7)),
+                                  transforms.RandomCrop(IMG_SIZE),
                                   transforms.ToTensor(),
                                   transforms.Normalize((0.5,), (0.5,)),
                                   GaussianNoise(mean=0, std=0.01)])
