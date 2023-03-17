@@ -13,6 +13,7 @@ from PIL import Image
 from torchvision import transforms
 from torch.utils.data import Dataset, DataLoader, ConcatDataset, random_split
 from torch.nn.functional import interpolate
+import torchvision.transforms.functional as TF
 
 
 # Path to training and validation directories
@@ -186,6 +187,30 @@ class GaussianNoise(object):
     def __call__(self, img):
         return img + torch.randn(tuple(img.size())) * self.std + self.mean
 
+
+class Cutout(object):
+    def __init__(self, size=16, p=0.5):
+        self.size = size
+        self.p = p
+
+    def __call__(self, img):
+        if random.random() > self.p:
+            return img
+
+        w, h = img.size
+        x = random.randint(0, w - self.size)
+        y = random.randint(0, h - self.size)
+        mask = np.ones((h, w), np.float32)
+        mask[y:y+self.size, x:x+self.size] = 0.
+        mask = torch.from_numpy(mask)
+        img = TF.to_tensor(img)
+        img = img * mask.unsqueeze(0)
+        img = TF.to_pil_image(img)
+
+        return img
+
+
+
 transformer = transforms.Compose([transforms.ToTensor(), 
                                   transforms.Normalize((0.5,), (0.5,))])
 
@@ -231,8 +256,20 @@ mixed_dataset = MixedDataset(cifar_aug2, cifar_aug3)
 # Merge training data with mixed data
 merged_dataset2 = ConcatDataset([cifar_train, mixed_dataset])
 
+# Advanced augmentation technique - cutout
+transformer3 = transforms.Compose([Cutout(size=10, p=1),
+                                  transforms.ToTensor(), 
+                                  transforms.Normalize((0.5,), (0.5,))])
+
+cifar_aug4 = CifarDataset(root_dir = TRAIN_DIR, labels=TRAIN_LABELS, 
+                          transform=transformer3, class_dict=CLASS_DICT)
+cifar_aug4.display_sample_images(sample_size=4)
+plt.show()
+merged_dataset3 = ConcatDataset([cifar_train, cifar_aug4])
+
 # Create DataLoader instances
 train_loader = DataLoader(cifar_train, batch_size=32, shuffle=True)
 val_loader = DataLoader(cifar_val, batch_size=32, shuffle=False)
 augmentation1_loader = DataLoader(merged_dataset1, batch_size=32, shuffle=True)
 augmentation2_loader = DataLoader(merged_dataset2, batch_size=32, shuffle=True)
+augmentation3_loader = DataLoader(merged_dataset3, batch_size=32, shuffle=True)
