@@ -16,6 +16,8 @@ from torch.nn.functional import interpolate
 import torchvision.transforms.functional as TF
 
 
+# GLOBAL VARIABLES
+
 # Path to training and validation directories
 TRAIN_DIR = 'Cifar10\\train'
 VAL_DIR = 'Cifar10\\val'
@@ -34,6 +36,8 @@ CLASS_DICT = {CLASS_NAMES[i]: i for i in range(len(CLASS_NAMES))}
 # Size in pixels of single image
 IMG_SIZE=32
 
+
+# CLASSES
 
 class CifarDataset(Dataset):
     """
@@ -210,6 +214,7 @@ class Cutout(object):
         return img
 
 
+# DATASETS, DATALOADERS, TRANSFORMERS
 
 transformer = transforms.Compose([transforms.ToTensor(), 
                                   transforms.Normalize((0.5,), (0.5,))])
@@ -248,10 +253,8 @@ transformer2 = transforms.Compose([transforms.Pad(padding=(4, 4, 4, 4), fill=0, 
                                     
 cifar_aug2 = CifarDataset(root_dir = TRAIN_DIR, labels=TRAIN_LABELS, 
                                       transform=transformer2, class_dict=CLASS_DICT), 
-cifar_aug3 = CifarDataset(root_dir = TRAIN_DIR, labels=TRAIN_LABELS, 
-                          transform=transformer2, class_dict=CLASS_DICT)
 
-mixed_dataset = MixedDataset(cifar_aug2, cifar_aug3)
+mixed_dataset = MixedDataset(cifar_aug2, cifar_aug2)
 
 # Merge training data with mixed data
 merged_dataset2 = ConcatDataset([cifar_train, mixed_dataset])
@@ -263,8 +266,7 @@ transformer3 = transforms.Compose([Cutout(size=10, p=1),
 
 cifar_aug4 = CifarDataset(root_dir = TRAIN_DIR, labels=TRAIN_LABELS, 
                           transform=transformer3, class_dict=CLASS_DICT)
-cifar_aug4.display_sample_images(sample_size=4)
-plt.show()
+
 merged_dataset3 = ConcatDataset([cifar_train, cifar_aug4])
 
 # Create DataLoader instances
