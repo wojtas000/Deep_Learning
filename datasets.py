@@ -220,7 +220,7 @@ cutout_loader = DataLoader(cifar_cutout, batch_size=32, shuffle=True)
 
 
 # dataset to alexnet
-import torchvision.transforms as transforms
+
 transformer = transforms.Compose([
         transforms.Resize((256, 256)),
         transforms.ToTensor(),
