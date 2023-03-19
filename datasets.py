@@ -217,3 +217,22 @@ cifar_cutout = CifarDataset(root_dir = TRAIN_DIR, labels=TRAIN_LABELS,
 basic_aug_loader = DataLoader(cifar_basic_aug, batch_size=32, shuffle=True)
 mixup_loader = DataLoader(cifar_mixup, batch_size=32, shuffle=True)
 cutout_loader = DataLoader(cifar_cutout, batch_size=32, shuffle=True)
+
+
+# dataset to alexnet
+import torchvision.transforms as transforms
+transformer = transforms.Compose([
+        transforms.Resize((256, 256)),
+        transforms.ToTensor(),
+        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+    ])
+
+
+# Create pyTorch Dataset instances of training and validation data
+cifar_train_AN = CifarDataset(root_dir = TRAIN_DIR, labels=TRAIN_LABELS, 
+                           transform=transformer, class_dict=CLASS_DICT)
+cifar_val_AN = CifarDataset(root_dir = VAL_DIR, labels=VAL_LABELS, 
+                         transform=transformer, class_dict=CLASS_DICT)
+
+train_loader_AN = DataLoader(cifar_train_AN, batch_size=32, shuffle=True)
+test_loader_AN = DataLoader(cifar_val_AN, batch_size=32, shuffle=False)
