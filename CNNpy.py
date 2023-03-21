@@ -50,9 +50,9 @@ class CNN_3_class(nn.Module, ConvolutionalNeuralNetwork):
                 ,stride=1
                 ,padding=1
                 ,number_of_filters0=32
-                ,number_of_filters1=32
+                ,number_of_filters1=256
                 ,length_of_input0=32
-                ,no_neurons = 128
+                ,no_neurons = 500
                 ,dr=nn.Dropout(p=0)
                 ,activation_function=torch.relu):
         super(CNN_3_class, self).__init__()
@@ -75,6 +75,14 @@ class CNN_3_class(nn.Module, ConvolutionalNeuralNetwork):
         x = self.dr(x)
         x = self.fc2(x)
         return x
+
+    def predict(self, x):
+        logits = self(x)
+        return torch.softmax(logits, dim=1)
+    
+    def predict_class(self, x):
+        logits = self(x)
+        return logits.argmax(dim=1)
 
 
 # class CNN_3_class(nn.Module, ConvolutionalNeuralNetwork):
