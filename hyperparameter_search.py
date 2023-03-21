@@ -8,42 +8,42 @@ from torch.optim.lr_scheduler import StepLR
 import datasets
 from weighted_random_search import wrs
 from tqdm import tqdm
+from CNNpy import CNN_3_class
 
-
-class ConvolutionalNeuralNetwork():
+# class ConvolutionalNeuralNetwork():
     
-    def train_step(self, data, optimizer, criterion):
-        x, y = data
+#     def train_step(self, data, optimizer, criterion):
+#         x, y = data
 
-        optimizer.zero_grad()
+#         optimizer.zero_grad()
 
-        logits = self(x)
-        loss = criterion(logits, y)
-        loss.backward()
-        optimizer.step()
+#         logits = self(x)
+#         loss = criterion(logits, y)
+#         loss.backward()
+#         optimizer.step()
 
-        accuracy = (logits.argmax(dim=1) == y).float().mean()
+#         accuracy = (logits.argmax(dim=1) == y).float().mean()
 
-        return {'loss': loss, 'accuracy': accuracy}
+#         return {'loss': loss, 'accuracy': accuracy}
 
     
-    def test_step(self, data, criterion):
-        x, y = data
+#     def test_step(self, data, criterion):
+#         x, y = data
 
-        logits = self(x)
-        loss = criterion(logits, y)
-        accuracy = (logits.argmax(dim=1) == y).float().mean()
+#         logits = self(x)
+#         loss = criterion(logits, y)
+#         accuracy = (logits.argmax(dim=1) == y).float().mean()
 
-        return {'loss': loss, 'accuracy': accuracy}
+#         return {'loss': loss, 'accuracy': accuracy}
     
-    def Conv2d_output_size(self, w, k, s, p):
-        '''
-        w - width of input image
-        k - kernel size
-        s - stride
-        p - padding
-        '''
-        return (w - k + 2 * p) / s + 1
+#     def Conv2d_output_size(self, w, k, s, p):
+#         '''
+#         w - width of input image
+#         k - kernel size
+#         s - stride
+#         p - padding
+#         '''
+#         return (w - k + 2 * p) / s + 1
     
 
 # class CNN_3_class(nn.Module, ConvolutionalNeuralNetwork):
