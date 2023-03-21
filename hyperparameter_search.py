@@ -197,7 +197,9 @@ class Net_wrapper:
                 print(f'val_acc:{avg_val_accuracy}, val_loss: {avg_val_loss}')
 
             scheduler.step()
-
+        
+        self.model = model
+        
         return avg_train_accuracy, avg_train_loss, avg_val_accuracy, avg_val_loss
     
 
