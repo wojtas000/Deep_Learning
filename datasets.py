@@ -21,10 +21,11 @@ import torchvision.transforms.functional as TF
 # Path to training and validation directories
 TRAIN_DIR = 'Cifar10\\train'
 VAL_DIR = 'Cifar10\\val'
-
+TRAIN_FULL_DIR = 'Cifar10\\train_full'
 # Path to dataframe with labels for training and validation data
 TRAIN_LABELS = 'Cifar10\\trainLabels.csv'
 VAL_LABELS = 'Cifar10\\valLabels.csv'
+TRAIN_FULL_LABELS = 'Cifar10\\train_fullLabels.csv'
 
 # List of class names
 CLASS_NAMES = ['frog', 'truck', 'deer', 'automobile', 'bird', 'horse', 'ship', 'cat', 'dog',
@@ -201,6 +202,9 @@ transformer3 = transforms.Compose([Cutout(size=10, p=1),
 # Original
 cifar_train = CifarDataset(root_dir = TRAIN_DIR, labels=TRAIN_LABELS, 
                            transform=default_transformer, class_dict=CLASS_DICT)
+cifar_train_full = CifarDataset(root_dir = TRAIN_FULL_DIR, labels=TRAIN_FULL_LABELS, 
+                           transform=default_transformer, class_dict=CLASS_DICT)
+
 cifar_val = CifarDataset(root_dir = VAL_DIR, labels=VAL_LABELS, 
                          transform=default_transformer, class_dict=CLASS_DICT)
 
@@ -210,6 +214,9 @@ val_loader = DataLoader(cifar_val, batch_size=32, shuffle=False)
 #augmented
 cifar_basic_aug = CifarDataset(root_dir = TRAIN_DIR, labels=TRAIN_LABELS, 
                           transform=transformer1, class_dict=CLASS_DICT)
+cifar_basic_aug_full = CifarDataset(root_dir = TRAIN_FULL_DIR, labels=TRAIN_FULL_LABELS, 
+                          transform=transformer1, class_dict=CLASS_DICT)
+
 cifar_mixup = CifarDataset(root_dir = TRAIN_DIR, labels=TRAIN_LABELS, 
                                       transform=transformer2, class_dict=CLASS_DICT)
 cifar_cutout = CifarDataset(root_dir = TRAIN_DIR, labels=TRAIN_LABELS, 
