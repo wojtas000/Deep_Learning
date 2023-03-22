@@ -85,7 +85,7 @@ class CNN_3_class(nn.Module, ConvolutionalNeuralNetwork):
         logits = self(x)
         return logits.argmax(dim=1)
     
-    def prepare_submission(self, test_data, dict=ds_own.CLASS_DICT):
+    def prepare_submission(self, test_data=ds_own.cifar_test, dict=ds_own.CLASS_DICT):
         
         test_loader = DataLoader(test_data, batch_size=64, shuffle=False)
         all_predictions = []
