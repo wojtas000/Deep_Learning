@@ -7,6 +7,7 @@ from torchvision.datasets import MNIST
 from torchvision.transforms import ToTensor
 from tqdm import tqdm
 import numpy as np
+import pandas as pd
 
 class ConvolutionalNeuralNetwork():
     
@@ -83,7 +84,25 @@ class CNN_3_class(nn.Module, ConvolutionalNeuralNetwork):
     def predict_class(self, x):
         logits = self(x)
         return logits.argmax(dim=1)
+    
+    def prepare_submission(self, test_data=ds_own.cifar_test, dict=ds_own.CLASS_DICT):
+        
+        test_loader = DataLoader(test_data, batch_size=64, shuffle=False)
+        all_predictions = []
+        
+        with torch.no_grad():
+            print('Classifying test images...')
+            for images, _ in tqdm(test_loader):
+                predicted = self.predict_class(images)
+                all_predictions += predicted.tolist()
+        
+        r_dict = {value:key for key, value in dict.items()}
 
+        labels = [r_dict[pred] for pred in all_predictions]
+        id = list(range(1, len(all_predictions) + 1))
+        submission = pd.DataFrame({'id': id, 'label': labels})
+        
+        return submission
 
 # class CNN_3_class(nn.Module, ConvolutionalNeuralNetwork):
 #     def __init__(self, num_classes = 10
