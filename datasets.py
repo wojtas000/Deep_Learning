@@ -22,10 +22,13 @@ import torchvision.transforms.functional as TF
 TRAIN_DIR = 'Cifar10\\train'
 VAL_DIR = 'Cifar10\\val'
 TRAIN_FULL_DIR = 'Cifar10\\train_full'
+TEST_DIR = 'Cifar10\\test'
+
 # Path to dataframe with labels for training and validation data
 TRAIN_LABELS = 'Cifar10\\trainLabels.csv'
 VAL_LABELS = 'Cifar10\\valLabels.csv'
 TRAIN_FULL_LABELS = 'Cifar10\\train_fullLabels.csv'
+TEST_LABELS = 'Cifar10\\testLabels.csv'
 
 # List of class names
 CLASS_NAMES = ['frog', 'truck', 'deer', 'automobile', 'bird', 'horse', 'ship', 'cat', 'dog',
@@ -170,7 +173,8 @@ cifar_train = CifarDataset(root_dir = TRAIN_DIR, labels=TRAIN_LABELS,
                            transform=default_transformer, class_dict=CLASS_DICT)
 cifar_val = CifarDataset(root_dir = VAL_DIR, labels=VAL_LABELS, 
                          transform=default_transformer, class_dict=CLASS_DICT)
-
+cifar_test = CifarDataset(root_dir = TEST_DIR, labels=TEST_LABELS, 
+                           transform=default_transformer, class_dict={0.0:0})
 
 # Simple augmentation technique
 transformer1 = transforms.Compose([transforms.Pad(padding=(4, 4, 4, 4), fill=0, padding_mode='constant'),
