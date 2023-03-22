@@ -43,6 +43,33 @@ class ConvolutionalNeuralNetwork():
         p - padding
         '''
         return np.floor((w - k + 2 * p) / s + 1)
+    
+    def predict(self, x):
+        logits = self(x)
+        return torch.softmax(logits, dim=1)
+    
+    def predict_class(self, x):
+        logits = self(x)
+        return logits.argmax(dim=1)
+    
+    def prepare_submission(self, test_data=ds_own.cifar_test, dict=ds_own.CLASS_DICT):
+        
+        test_loader = DataLoader(test_data, batch_size=64, shuffle=False)
+        all_predictions = []
+        
+        with torch.no_grad():
+            print('Classifying test images...')
+            for images, _ in tqdm(test_loader):
+                predicted = self.predict_class(images)
+                all_predictions += predicted.tolist()
+        
+        r_dict = {value:key for key, value in dict.items()}
+
+        labels = [r_dict[pred] for pred in all_predictions]
+        id = list(range(1, len(all_predictions) + 1))
+        submission = pd.DataFrame({'id': id, 'label': labels})
+        
+        return submission
 
 class CNN_3_class(nn.Module, ConvolutionalNeuralNetwork):
     def __init__(self, num_classes = 10
@@ -77,32 +104,7 @@ class CNN_3_class(nn.Module, ConvolutionalNeuralNetwork):
         x = self.fc2(x)
         return x
 
-    def predict(self, x):
-        logits = self(x)
-        return torch.softmax(logits, dim=1)
-    
-    def predict_class(self, x):
-        logits = self(x)
-        return logits.argmax(dim=1)
-    
-    def prepare_submission(self, test_data=ds_own.cifar_test, dict=ds_own.CLASS_DICT):
-        
-        test_loader = DataLoader(test_data, batch_size=64, shuffle=False)
-        all_predictions = []
-        
-        with torch.no_grad():
-            print('Classifying test images...')
-            for images, _ in tqdm(test_loader):
-                predicted = self.predict_class(images)
-                all_predictions += predicted.tolist()
-        
-        r_dict = {value:key for key, value in dict.items()}
 
-        labels = [r_dict[pred] for pred in all_predictions]
-        id = list(range(1, len(all_predictions) + 1))
-        submission = pd.DataFrame({'id': id, 'label': labels})
-        
-        return submission
 
 # class CNN_3_class(nn.Module, ConvolutionalNeuralNetwork):
 #     def __init__(self, num_classes = 10
@@ -194,7 +196,7 @@ class CNN_3_class(nn.Module, ConvolutionalNeuralNetwork):
 import torch.nn as nn
 import torchvision.models as models
 
-class PretrainedAlexNet(nn.Module):
+class PretrainedAlexNet(nn.Module, ConvolutionalNeuralNetwork):
     def __init__(self, num_classes=10, pretrained=True):
         super().__init__()
 

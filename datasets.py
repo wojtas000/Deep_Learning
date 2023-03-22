@@ -245,5 +245,8 @@ cifar_train_AN = CifarDataset(root_dir = TRAIN_DIR, labels=TRAIN_LABELS,
 cifar_val_AN = CifarDataset(root_dir = VAL_DIR, labels=VAL_LABELS, 
                          transform=transformer, class_dict=CLASS_DICT)
 
+cifar_train_fullAN = CifarDataset(root_dir = TRAIN_FULL_DIR, labels=TRAIN_FULL_LABELS,
+                            transform=transformer, class_dict=CLASS_DICT)
+
 train_loader_AN = DataLoader(cifar_train_AN, batch_size=32, shuffle=True)
 test_loader_AN = DataLoader(cifar_val_AN, batch_size=32, shuffle=False)
