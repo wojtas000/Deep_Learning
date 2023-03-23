@@ -3,7 +3,7 @@ import numpy as np
 import torch.optim as optim
 import torch.nn as nn
 from sklearn.model_selection import ParameterGrid
-from torch.utils.data import Dataset, DataLoader, SubsetRandomSampler, Subset
+from torch.utils.data import DataLoader, SubsetRandomSampler, Subset
 from torch.optim.lr_scheduler import StepLR
 import datasets
 from weighted_random_search import wrs
@@ -14,11 +14,29 @@ from CNNpy import CNN_3_class
 class Net_wrapper:
     """ 
     Wrapper for neural network model. It combines the model itself (nn.Module) together with
-    optimizer, loss function and training parameters (such as max_epochs, learning rate and batch size)
+    optimizer, learning rate scheduler, loss function and other
+    training parameters (such as max_epochs, learning rate and batch size). 
+    It allows to perform training of neural network simply by creating instance of Net_wrapper and 
+    running `score` method. Compatible with grid search and random search classes.
     """
         
     def __init__(self, model=CNN_3_class, criterion=nn.CrossEntropyLoss(), optimizer=optim.Adam, weight_decay = 0,
                  max_epochs=5, batch_size=32, learning_rate=0.001, step_size=10, gamma=0.5, **kwargs):
+        """
+        Args:
+        model: Neural network model (e. g. torch.nn.Module)
+        criterion: loss function
+        optimizer: optimizer used for minimizing the loss function
+        weight_decay: strength of weight regularization
+        max_epochs: number of epochs for training
+        batch_size: size of batches feeding the neural network
+        learning_rate: learning rate
+        step_size: number of epochs, after which the learning rate drops down
+        gamma: parameter multiplied by learning rate after 'step_size' number of epochs.
+        **kwargs: other parameters of the model. Note: the key of parameter must correspond to exact name of 
+                  attribute in model. For example, if model has attribute 'number_of_filters', the passed parameter should 
+                  have the exact same name, 'number of filters'.
+        """
         if kwargs:
             self.model_params = kwargs
         else:
@@ -38,7 +56,13 @@ class Net_wrapper:
 
     def score(self, train_dataset, val_dataset, verbose=0):
         """
-        Train model on train_dataset and calculate validation acurracy on val_dataset. 
+        Method implementing forward-backward propagation loop and computing accuracy on training and validation sets.
+        Args:
+        train_dataset: PyTorch dataset of training data
+        val_dataset: PyTorch dataset of validation data
+        verbose: if 1, additional information is printed after each epoch such as training/validation loss/accuracy
+        Returns:
+        Training accuracy, training loss, validation accuracy and validation loss after full training. 
         """
         if self.model_params:
             model = self.model(**self.model_params)
@@ -55,7 +79,7 @@ class Net_wrapper:
         val_loader = DataLoader(val_dataset, batch_size=self.batch_size, shuffle=False)
 
         
-        # TRAINING LOOP
+        # Forward-backward propagation loop
         for epoch in range(self.max_epochs):
             
             if verbose == 1:
@@ -117,10 +141,16 @@ class Net_wrapper:
 
 
 class RandomSearch:
-    
+    """
+    Class implementing classic random search over the space of parameters.
+    """
     def __init__(self, net: Net_wrapper, param_grid, verbose=1):
       """
-
+      Args:
+      net: Net_wrapper instance
+      param_grid: dictionary of parameters that we search for. 
+      verbose: if 1, print additional information after each trial, 
+      such as set of parameters that was checked and model accuracy on chosen set of parameters.
       """
       self.net = net
       self.param_grid = param_grid
@@ -132,6 +162,12 @@ class RandomSearch:
      
     @staticmethod
     def choose_random__params(parameters, seed=1):
+      """
+      Helper function used for choosing parameter set at random.
+      Args:
+      parameters: parameter dictionary.
+      seed: seed of random state.
+      """
       random_params = {}
       rnd = np.random.RandomState(seed)
       
@@ -149,9 +185,16 @@ class RandomSearch:
       
     def fit(self, train_dataset, val_dataset, n_trials = 10):
       """
-      Fit the grid search with train and validation dataset. 
+      Fit the random search with train and validation dataset. 
       Search for optimal parameters for neural network declared during 
-      initialization of GridSearch instance.
+      initialization of RandomSearch instance.
+      Args:
+      train_dataset: PyTorch Dataset of training data
+      cal_dataset: PyTprch Dataset of validation data
+      n_trials: number of trials performed during random search.
+      
+      Returns:
+      self
       """
       
       for trial in range(n_trials):
@@ -176,19 +219,16 @@ class RandomSearch:
 
 class GridSearch:
     """
-    Class used to perform grid search on neural networks 
-
-    Attributes:
-    self.net - Net_wrapper instance
-    self.param_grid - dictionary of parameters we want to search
-    self.scores - list for scores of each set of parameters
-    self.best_score - best score out of all parameters
-    self.best_params - best set of parameters
-    self.verbose - if set to 1 additional information (parameter set and accuracy) prints with each iteration of grid search. 
+    Class used to perform grid search on set of parameters. 
     """
     def __init__(self, net: Net_wrapper, param_grid, step_by_step=False, verbose=1):
         """
-
+        Args:
+        net: Net_wrapper instance
+        param_grid: dictionary of parameters
+        step_by_step: if False normal grid search is performed, if True each parameter is evaluated step by step 
+                      (not all the parameters together)
+        verbose: if 1, additional information (parameter set and accuracy) prints with each iteration of grid search. 
         """
         self.net = net
         self.param_grid = param_grid
@@ -204,6 +244,9 @@ class GridSearch:
         Fit the grid search with train and validation dataset. 
         Search for optimal parameters for neural network declared during 
         initialization of GridSearch instance.
+        Args:
+        train_dataset: PyTorch instance of train data
+        val_dataset: PyTorch instance of validation data
         """
         if self.step_by_step==False:
             for params in ParameterGrid(self.param_grid):
@@ -255,7 +298,8 @@ class GridSearch:
 
 class WeightedRandomSearch():
     """
-    Class used to perform grid search on neural networks 
+    Class used to perform weighted random search on neural networks.
+    Not completed - unable to use fANOVA package. 
 
     Attributes:
     self.net - Net_wrapper instance
@@ -267,7 +311,10 @@ class WeightedRandomSearch():
     """
     def __init__(self, net, param_grid, verbose=1):
         """
-
+        Args:
+        net - Net_wrapper instance
+        param_grid - dictionary of parameters we want to search
+        verbose - if set to 1 additional information (parameter set and accuracy) prints with each iteration of grid search. 
         """
         self.net = net
         self.param_grid = param_grid
@@ -296,6 +343,7 @@ class WeightedRandomSearch():
         
         return self
     
+# GridSearch and RandomSearch tests
 
 if __name__=="__main__":
     
