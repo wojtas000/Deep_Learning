@@ -1,3 +1,7 @@
+"""
+Module for Weighted random search algorithm implementation. Not finished due to problems with downloading fANOVA package.
+"""
+
 import random
 
 def wrs_step(F, params:dict, F_value:float, p:dict, k:dict, iteration:int, param_grid:dict):
@@ -70,22 +74,3 @@ if __name__ == '__main__':
     N, N_0 = 10, 3
     print(wrs_step(F, params, F_value, p, k, iteration, param_grid))
     print(wrs(F, N, N_0, param_grid))
-
-# import pandas as pd
-# import numpy as np
-# import ConfigSpace 
-# from ConfigSpace.hyperparameters import UniformFloatHyperparameter
-# from fanova import fANOVA
-
-# pima = pd.read_csv('pima.csv', header=0)
-# features = pima.iloc[:, :-1]
-# responses = pima.iloc[:, -1]
-# pcs = list(zip(np.min(features,axis=0), np.max(features, axis=0)))
-# print(pcs)
-# cs = ConfigSpace.ConfigurationSpace()
-# for i in range(len(pcs)):
-# 	cs.add_hyperparameter(UniformFloatHyperparameter("%i" %i, pcs[i][0], pcs[i][1]))
-# cs
-
-# dims = (1, )
-# f = fANOVA(X = features, y=responses, config_space=cs)

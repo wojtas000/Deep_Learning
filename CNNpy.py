@@ -9,8 +9,19 @@ import torch.nn as nn
 import torchvision.models as models
 
 class ConvolutionalNeuralNetwork():
-    
+    """
+    Master class for all Convolutional Neural Network models
+    being instances of torch.nn.Module class.
+    """
     def train_step(self, data, optimizer, criterion):
+        """
+        Args:
+        data: (image, label) tuple.
+        optimizer: optimizer chosen for minimization of loss function.
+        criterion: loss function.
+        Returns:
+        Dictionary containing training loss and accuracy. 
+        """
         x, y = data
 
         optimizer.zero_grad()
@@ -26,6 +37,14 @@ class ConvolutionalNeuralNetwork():
 
     
     def test_step(self, data, criterion):
+        """
+        Args:
+        data: (image, label) tuple.
+        optimizer: optimizer chosen for minimization of loss function.
+        criterion: loss function.
+        Returns:
+        Dictionary containing testing/validation loss and accuracy. 
+        """
         x, y = data
 
         logits = self(x)
@@ -36,22 +55,35 @@ class ConvolutionalNeuralNetwork():
     
     def Conv2d_output_size(self, w, k, s, p):
         '''
-        w - width of input image
-        k - kernel size
-        s - stride
-        p - padding
+        Method calculating output size of convolutional layer.
+        w: width of input image.
+        k: kernel size.
+        s: stride.
+        p: padding.
+        Returns:
+        Output size of convolutional layer.
         '''
         return np.floor((w - k + 2 * p) / s + 1)
     
     def predict(self, x):
+
         logits = self(x)
         return torch.softmax(logits, dim=1)
     
     def predict_class(self, x):
+        
         logits = self(x)
         return logits.argmax(dim=1)
     
     def prepare_submission(self, test_data=ds_own.cifar_test, dict=ds_own.CLASS_DICT):
+        """
+        Method used for preparing pandas.DataFrame instance for submission on Kaggle.
+        Args:
+        test_data: PyTorch Dataset of test data
+        dict: dictionary used for encoding labels of data into integers.
+        Returns: 
+        pandas.DataFrame containing indices of images and their classified labels.
+        """
         
         test_loader = DataLoader(test_data, batch_size=64, shuffle=False)
         all_predictions = []
