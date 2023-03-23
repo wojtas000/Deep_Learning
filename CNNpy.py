@@ -1,13 +1,12 @@
 import torch
 import torch.nn as nn
-import torch.optim as optim
 import datasets as ds_own
 from torch.utils.data import DataLoader
-from torchvision.datasets import MNIST
-from torchvision.transforms import ToTensor
 from tqdm import tqdm
 import numpy as np
 import pandas as pd
+import torch.nn as nn
+import torchvision.models as models
 
 class ConvolutionalNeuralNetwork():
     
@@ -105,96 +104,42 @@ class CNN_3_class(nn.Module, ConvolutionalNeuralNetwork):
         return x
 
 
+class MyCNN(nn.Module, ConvolutionalNeuralNetwork):
+    def __init__(self):
+        super(MyCNN, self).__init__()
+        self.conv1 = nn.Conv2d(in_channels=3, out_channels=736, kernel_size=3, padding=1)
+        self.conv2 = nn.Conv2d(in_channels=736, out_channels=508, kernel_size=3, padding=1)
+        self.maxpool1 = nn.MaxPool2d(kernel_size=2, stride=2)
+        self.conv3 = nn.Conv2d(in_channels=508, out_channels=664, kernel_size=3, padding=1)
+        self.conv4 = nn.Conv2d(in_channels=664, out_channels=916, kernel_size=3, padding=1)
+        self.maxpool2 = nn.MaxPool2d(kernel_size=2, stride=2)
+        self.conv5 = nn.Conv2d(in_channels=916, out_channels=186, kernel_size=3, padding=1)
+        self.conv6 = nn.Conv2d(in_channels=186, out_channels=352, kernel_size=3, padding=1)
+        self.dropout = nn.Dropout(p=0.5)
+        self.linear = nn.Linear(in_features=22528, out_features=1229)
+        self.output = nn.Linear(in_features=1229, out_features=10)
 
-# class CNN_3_class(nn.Module, ConvolutionalNeuralNetwork):
-#     def __init__(self, num_classes = 10
-#                 ,kernel_size1=3
-#                 ,kernel_size2=3
-#                 ,stride=1
-#                 ,padding=1
-#                 ,number_of_filters0=32
-#                 ,number_of_filters1=32
-#                 ,length_of_input0=32
-#                 ,no_neurons = 128
-#                 ,dr=nn.Dropout(p=0)
-#                 ,activation_function=torch.relu):
-#         super(CNN_3_class, self).__init__()
-#         self.conv1 = nn.Conv2d(3, number_of_filters0, kernel_size1, stride, padding, stride)
-#         self.pool1 = nn.MaxPool2d(2)
-#         self.conv2 = nn.Conv2d(number_of_filters0, number_of_filters1, kernel_size2, stride, padding, stride)
-#         self.pool2 = nn.MaxPool2d(2)
-#         self.fc1 = nn.Linear(number_of_filters1 * (length_of_input0//4) * (length_of_input0//4), no_neurons)
-#         self.fc2 = nn.Linear(no_neurons, num_classes)
-#         self.dr = dr
-#         self.activation_function = activation_function
-
-#     def forward(self, x):
-#         x = self.conv1(x)
-#         x = self.pool1(x)
-#         x = self.activation_function(x)
-#         x = self.conv2(x)
-#         x = self.pool2(x)
-#         x = self.activation_function(x)
-#         x = x.view(x.size(0), -1)
-#         x = self.fc1(x)
-#         x = self.activation_function(x)
-#         x = self.dr(x)
-#         x = self.fc2(x)
-#         return x
-
-# class CNN_3_class(nn.Module, ConvolutionalNeuralNetwork):
-#     def __init__(self, num_classes = 10
-#                 ,kernel_size1=2
-#                 ,kernel_size2=2
-#                 ,stride=1
-#                 ,padding=1
-#                 ,number_of_filters0=32
-#                 ,number_of_filters1=32
-#                 ,length_of_input0=32
-#                 ,no_neurons = 128
-#                 ,dr=nn.Dropout(p=0)
-#                 ,activation_function=torch.relu):
-#         super(CNN_3_class, self).__init__()
-#         self.conv1 = nn.Conv2d(3, number_of_filters0, kernel_size1, stride, padding)
-#         self.pool1 = nn.MaxPool2d(2)
-#         length_of_input1 = self.Conv2d_output_size(length_of_input0, kernel_size1, stride, padding)//2
-#         self.conv2 = nn.Conv2d(number_of_filters0, number_of_filters1, kernel_size2, stride, padding)
-#         self.pool2 = nn.MaxPool2d(2)
-#         length_of_input2 = self.Conv2d_output_size(length_of_input1, kernel_size2, stride, padding)//2
-#         self.fc1 = nn.Linear(int(number_of_filters1*length_of_input2*length_of_input2), no_neurons)
-#         self.dr = dr
-#         self.fc2 = nn.Linear(no_neurons, num_classes)
-#         # parameters
-#         self.num_classes = num_classes
-#         self.kernel_size1 = kernel_size1
-#         self.kernel_size2 = kernel_size1# change into the same size as kernel_size1
-#         self.stride = stride
-#         self.padding = padding
-#         self.number_of_filters0 = number_of_filters0
-#         self.number_of_filters1 = number_of_filters1
-#         self.length_of_input0 = length_of_input0
-#         self.no_neurons = no_neurons
-
-#         self.activation_function = activation_function
-        
-#     def forward(self, x):
-#         x = self.conv1(x)
-#         x = self.activation_function(x)
-#         x = self.pool1(x)
-#         length_of_input1 = self.Conv2d_output_size(self.length_of_input0, self.kernel_size1, self.stride, self.padding)/2
-#         x = self.conv2(x)
-#         x = self.activation_function(x)
-#         x = self.pool2(x)
-#         length_of_input2 = self.Conv2d_output_size(length_of_input1, self.kernel_size2, self.stride, self.padding)/2
-#         x = x.view(-1, int(self.number_of_filters1*length_of_input2*length_of_input2))
-#         x = self.fc1(x)
-#         x = self.activation_function(x)
-#         x = self.dr(x)
-#         x = self.fc2(x)
-#         return x
-
-import torch.nn as nn
-import torchvision.models as models
+    def forward(self, x):
+        x = self.conv1(x)
+        x = nn.functional.relu(x)
+        x = self.conv2(x)
+        x = nn.functional.relu(x)
+        x = self.maxpool1(x)
+        x = self.conv3(x)
+        x = nn.functional.relu(x)
+        x = self.conv4(x)
+        x = nn.functional.relu(x)
+        x = self.maxpool2(x)
+        x = self.conv5(x)
+        x = nn.functional.relu(x)
+        x = self.conv6(x)
+        x = nn.functional.relu(x)
+        x = x.view(x.size(0), -1)
+        x = self.dropout(x)
+        x = self.linear(x)
+        x = nn.functional.relu(x)
+        x = self.output(x)
+        return x
 
 class PretrainedAlexNet(nn.Module, ConvolutionalNeuralNetwork):
     def __init__(self, num_classes=10, pretrained=True):

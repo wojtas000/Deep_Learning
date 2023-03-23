@@ -238,10 +238,25 @@ transformer = transforms.Compose([
         transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])
 
+# Simple augmentation technique
+
+IMG_SIZE2 = 256
+
+transformer4 = transforms.Compose([transforms.Resize((300, 300)),
+                                  transforms.RandomRotation(degrees=(-30,30)),
+                                  transforms.ColorJitter(brightness=0.4),
+                                  transforms.RandomHorizontalFlip(p=0.5),
+                                  transforms.RandomCrop(IMG_SIZE2),
+                                  transforms.ToTensor(),
+                                  transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
+                                  GaussianNoise(mean=0, std=0.001)])
 
 # Create pyTorch Dataset instances of training and validation data
 cifar_train_AN = CifarDataset(root_dir = TRAIN_DIR, labels=TRAIN_LABELS, 
                            transform=transformer, class_dict=CLASS_DICT)
+cifar_train_AN_aug = CifarDataset(root_dir = TRAIN_DIR, labels=TRAIN_LABELS, 
+                           transform=transformer4, class_dict=CLASS_DICT)
+
 cifar_val_AN = CifarDataset(root_dir = VAL_DIR, labels=VAL_LABELS, 
                          transform=transformer, class_dict=CLASS_DICT)
 
