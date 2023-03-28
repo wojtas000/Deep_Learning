@@ -1,59 +1,25 @@
-Plan pracy
+This is the official repository for Convolutional Neural Network project from Deep Learning. The repository is split into files containing important classes, functions and variables (mostly with `.py` extension), files for training the networks and performing experiments (`.ipynb`), files storing parameters of saved models (`.pt`) and `.csv` files for storing results for Kaggle submission. 
 
-DONE na końcu - task skonczone
-* - aktulnie w pracy
+Here we provide detailed description of each respective file:
+1. `CNNpy.py` - containing classes of our custom neural networks as well as class of pretrained alexNet architecture on ImageNet. 
+2. `datasets.py` - containing PyTorch Dataset and Dataloader class for Cifar-10 data, classes used for data augmentation, transformers and instances of original and augmented data (ready for imports to other files)
+3. `hyperparameter_search.py` - containing classes used for hyperparameter search, such as Grid Search, Random Search and Weighted Random Search.
+4. `weighted_random_search.py`- file implementing weighted random search algorithm (not complete)
+5. `dataset_overview.ipynb` - containing overview of Cifar-10 data and augmented data
+6. `hyperparameter_tuning.ipynb` - containing code used for tuning hyperparameters of CNN custom model
+7. `ensamble.ipynb` - containing ensemble class along with experiments, results and plots of ensemble performance on original data
+8. `ensamble_aug.ipynb` - containing ensemble class along with experiments, results and plots of ensemble performance on augmented data
+9. `results.ipynb` - containing results of experiments on hyperparameter tuning.
+10. `train model {1, 2, 3}.ipynb` - files used for simoultaneous training of CNN models
+11. `trainAlexNet.ipynb`, `CNN3_full_train.ipynb` - files used for training AlexNet / CNN_3_class models
+11. `train_val_split.ipynb` - file containing method of splitting folder with Cifar-10 images into training and validation parts.
 
-# Mikołaj
-- research na temat sieci DONE
-    - wstepnie wiem co i jak DONE
-
-- Klasę sieci 
-    - zaczynam to robic DONE
-    - zrobiłem 3 sieci - zwykla siec bez warstw konwolucyjnych i dwie na podstawie artykułów - parametry warstw do ogarnięcia ale struktura jest zgodna z teorią DONE
-    - klasa sieci dostosowana do zmian hiperparametrow DONE
-    - master klasa do dziedziczenia 
-    * - pretrained model Alexnet
-
-- algorytm uczenia forward-backward DONE
-    - zaimplementowane od razu w klasie DONE
-
-- do ogarnięcia połaczenie klasy danych z modelem DONE
-
-# Janek
-- augmentacją danych DONE
-
-- przygotowaniem hiperparametrów / algorytmu szukania hiperparametrów
+Folders: 
+1. `ensamble_data` - containing predictions for ensemble models
+2. `saved_models` - containing parameters of saved Convolutional Neural Network models.
+3. `submissions` - containing `.csv` files with predictions on testing data, prepared for Kaggle submission
 
 
-# TASKI z polecenia
-
-•Test and compare different network architecture (at least one should be aconvolutional neural network)
-    - mamy 2 konwolucyjne i jedną zwykłą sieć
-
-•Investigate influence of the following hyper-parameter change on obtained results:
-    •At least 2 hyper-parameters related to training process
-        - no of epochs?
-        - parameter in optimizer?
-    •At least 2 hyper-parameters related to regularization
-        - pool size?
-        - ilosc warstw konwolucyjnych?
-
-•Investigate influence of at least X data augmentation techniques from the followinggroups:
-    -Standard operations (where x=3) DONE
-    -More advanced data augmentation techniques like mixup, cutmix, cutout (where x=1) DONE
-
-•Consider application of ensemble (hard/soft voting, stacking)
-
-
-FYI czym jest ensamble:
-Ensemble learning (zespół metod uczących) to technika uczenia maszynowego polegająca na łączeniu wyników kilku modeli (np. drzew decyzyjnych, sieci neuronowych) w celu poprawienia ogólnej skuteczności predykcji.
-
-Idea polega na tym, że kilka słabszych modeli połączonych razem może stworzyć silniejszy model. W ramach tej techniki stosuje się różne metody łączenia modeli, takie jak:
-
-Bagging - polega na losowym wyborze podzbiorów danych ze zbioru treningowego i uczeniu kilku niezależnych modeli na tych podzbiorach. Następnie wyniki tych modeli są łączone w celu uzyskania ogólnego wyniku. Ta metoda zmniejsza wariancję wyników i poprawia stabilność predykcji.
-
-Boosting - polega na tworzeniu sekwencji słabszych modeli, które są zbudowane na podstawie poprzednich modeli. Wagi próbek, które zostały źle sklasyfikowane przez poprzednie modele, są zwiększane, aby następny model skupił się na tych próbkach. Ta metoda zmniejsza błąd predykcji i zwiększa skuteczność klasyfikacji.
-
-Stacking - polega na zastosowaniu kilku modeli, a następnie nauczeniu modelu meta-klasyfikatora na wynikach tych modeli. Model meta-klasyfikatora przetwarza wyniki z kilku modeli i uzyskuje ogólny wynik. Ta metoda umożliwia wykorzystanie różnych rodzajów modeli i pozwala na lepsze dopasowanie do złożonych zbiorów danych.
-
-Ensemble learning jest popularną techniką w uczeniu maszynowym i znajduje zastosowanie w wielu dziedzinach, takich jak rozpoznawanie obrazów, rozpoznawanie mowy, klasyfikacja tekstu i wiele innych.
+Repository contributors:
+- Mikołaj Zalewski
+- Jan Wojtas
