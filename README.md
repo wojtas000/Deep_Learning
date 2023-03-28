@@ -1,3 +1,5 @@
+# Convolutional Neural Networks - Deep Learning
+
 This is the official repository for Convolutional Neural Network project from Deep Learning. The repository is split into files containing important classes, functions and variables (mostly with `.py` extension), files for training the networks and performing experiments (`.ipynb`), files storing parameters of saved models (`.pt`) and `.csv` files for storing results for Kaggle submission. 
 
 Here we provide detailed description of each respective file:
