@@ -5,7 +5,7 @@ This is the official repository for Convolutional Neural Network project from De
 Here we provide detailed description of each respective file:
 1. `CNNpy.py` - containing classes of our custom neural networks as well as class of pretrained alexNet architecture on ImageNet. 
 2. `datasets.py` - containing PyTorch Dataset and Dataloader class for Cifar-10 data, classes used for data augmentation, transformers and instances of original and augmented data (ready for imports to other files)
-3. `hyperparameter_search.py` - containing classes used for hyperparameter search, such as Grid Search, Random Search and Weighted Random Search.
+3. `hyperparameter_search.py` - containing classes used for hyperparameter search, such as Net_wrapper, Grid Search, Random Search and Weighted Random Search.
 4. `weighted_random_search.py`- file implementing weighted random search algorithm (not complete)
 5. `dataset_overview.ipynb` - containing overview of Cifar-10 data and augmented data
 6. `hyperparameter_tuning.ipynb` - containing code used for tuning hyperparameters of CNN custom model
