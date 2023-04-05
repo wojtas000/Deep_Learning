@@ -1,7 +1,7 @@
 # Deep Learning
 
 This is the official repository for projects from Deep Learning. 
-The repository is split into directories, each containing files for other, separate project.
+The repository is split into directories - each containing files for other, separate projects.
 
 ## Convolutional Neural Networks
 
