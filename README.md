@@ -31,6 +31,6 @@ Folders:
 
 `RNN` is folder for Convolutional Neural Network project from Deep Learning. 
 
-Repository contributors:
+# Repository contributors:
 - Mikołaj Zalewski
 - Jan Wojtas
