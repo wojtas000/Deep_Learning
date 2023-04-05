@@ -1,2 +1,3 @@
-Cifar10/
 __pycache__/
+CNN/Cifar10/
+CNN/saved_models/alex.pt

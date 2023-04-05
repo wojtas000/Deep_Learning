@@ -1,6 +1,11 @@
-# Convolutional Neural Networks - Deep Learning
+# Deep Learning
 
-This is the official repository for Convolutional Neural Network project from Deep Learning. The repository is split into files containing important classes, functions and variables (mostly with `.py` extension), files for training the networks and performing experiments (`.ipynb`), files storing parameters of saved models (`.pt`) and `.csv` files for storing results for Kaggle submission. 
+This is the official repository for projects from Deep Learning. 
+The repository is split into directories - each containing files for other, separate projects.
+
+## Convolutional Neural Networks
+
+`CNN` is folder for Convolutional Neural Network project from Deep Learning. The directory is split into files containing important classes, functions and variables (mostly with `.py` extension), files for training the networks and performing experiments (`.ipynb`), files storing parameters of saved models (`.pt`) and `.csv` files for storing results for Kaggle submission. 
 
 Here we provide detailed description of each respective file:
 1. `CNNpy.py` - containing classes of our custom neural networks as well as class of pretrained alexNet architecture on ImageNet. 
@@ -22,6 +27,10 @@ Folders:
 3. `submissions` - containing `.csv` files with predictions on testing data, prepared for Kaggle submission
 
 
-Repository contributors:
+## Recurrent Neural Networks
+
+`RNN` is folder for Convolutional Neural Network project from Deep Learning. 
+
+# Repository contributors:
 - Mikołaj Zalewski
 - Jan Wojtas
