@@ -8,15 +8,15 @@
 # Useful notes:
 
 1. Data preprocessing:
-- Cut `.wav` files into shorter pieces, by removing silence before and after word). Add optional padding with zeros to fill up to certain time.
-- Normalization of input
+- Cut `.wav` files into shorter pieces, by removing silence before and after word. Add optional padding with zeros to fill up to certain time.
+- Normalization of input.
 - Data augmentation: pitch shifting, speed variation, reverberation. 
 
 2. Feature extraction:
-- MFCC
-- delta and delta-delta coefficients (MFCC and deltas both suggested in [2])
-- MEL spectrogram (without MFCC extraction)
+- MFCC.
+- delta and delta-delta coefficients (MFCC and deltas both suggested in [2]).
+- MEL spectrogram (without MFCC extraction).
 
 3. Network:
-- Bidirectional LSTM component (might be better than unidirectional LSTM to capture dependencies in both directions)
-- Random search for hyperparams (suggested in [2])
+- Bidirectional LSTM component (might be better than unidirectional LSTM to capture dependencies in both directions).
+- Random search for hyperparams (suggested in [2]).
