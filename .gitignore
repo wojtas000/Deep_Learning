@@ -1,4 +1,6 @@
 __pycache__/
 CNN/Cifar10/
 CNN/saved_models/alex.pt
+CNN/logs/
+CNN/tensorboard.ipynb
 RNN/train/
