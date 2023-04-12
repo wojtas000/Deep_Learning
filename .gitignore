@@ -4,3 +4,5 @@ CNN/saved_models/alex.pt
 CNN/logs/
 CNN/tensorboard.ipynb
 RNN/train/
+RNN/new_padded3.wav
+RNN/preprocessing.ipynb

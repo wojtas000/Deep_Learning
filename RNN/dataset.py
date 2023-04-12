@@ -60,7 +60,7 @@ class SpeechDataset(Dataset):
 
 training_dataset = SpeechDataset(labels_path='train\\testing_list.txt')
 validation_dataset = SpeechDataset(labels_path='train\\validation_list.txt')
-
+training_dataloader = torch.utils.data.DataLoader(training_dataset, batch_size=1, shuffle=True)
 
 if __name__=='__main__':
     dataset = SpeechDataset('train\\audio')
