@@ -8,6 +8,8 @@ import webrtcvad
 from pydub import AudioSegment
 
 
+# This part is originated from https://github.com/wiseman/py-webrtcvad/blob/master/example.py
+
 def read_wave(path):
     """Reads a .wav file.
     Takes the path, and returns (PCM audio data, sample rate).
@@ -125,6 +127,11 @@ def vad_collector(sample_rate, frame_duration_ms,
         yield b''.join([f.bytes for f in voiced_frames])
 
 
+#------------------------------------------------------------------------------------------------------------------------------
+
+# These functions are used for preprocessing audio files
+
+
 def perform_vad(wav_file_path, new_file_path):
    
     audio, sample_rate = read_wave(wav_file_path)
@@ -132,8 +139,6 @@ def perform_vad(wav_file_path, new_file_path):
     frames = frame_generator(30, audio, sample_rate)
     frames = list(frames)
     segments = vad_collector(sample_rate, 30, 300, vad, frames)
-    # if type(segments) == list:
-    #     samples = np.concatenate(segments)
     for i, segment in enumerate(segments):
         write_wave(new_file_path, segment, sample_rate)
 
@@ -143,6 +148,7 @@ def resample_wav(wav_file_path, new_sample_rate):
     resampled = signal.resample(samples, int(new_sample_rate/sample_rate * samples.shape[0]))
     wavfile.write(wav_file_path, new_sample_rate, resampled.astype(np.int16))
 
+
 def padding(wav_file_path, new_path, pad_ms=1000):
     
     audio = AudioSegment.from_wav(wav_file_path)
@@ -151,6 +157,7 @@ def padding(wav_file_path, new_path, pad_ms=1000):
 
     padded = audio + silence
     padded.export(new_path, format='wav')
+
 
 
 if __name__ == '__main__':
