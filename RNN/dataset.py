@@ -2,6 +2,7 @@ import os
 import librosa
 import numpy as np
 import torch
+import pickle
 from torch.utils.data import Dataset
 from IPython.display import Audio, display
 
@@ -56,11 +57,42 @@ class SpeechDataset(Dataset):
                 print('Label:', self.labels[label])
             display(Audio(audio, rate=self.sr))
 
+class ProcessedSpeechDataset(Dataset):
+    
+    def __init__(self, feature_list='features_training.pkl', labels=LABELS):
+        self.feature_list = feature_list
+        self.labels = labels
+        self.features = None
+        self.labels_dict = {label: i for i, label in enumerate(self.labels)}
+        
+        with open(feature_list, "rb") as f:
+            self.features = pickle.load(f)
+
+    
+    def __len__(self):
+        return len(self.features)
+    
+    def __getitem__(self, idx):
+        feature = self.features[idx]
+        
+        audio = torch.FloatTensor(feature[0])
+        
+        if feature[1] in self.labels_dict:
+            label = torch.LongTensor([self.labels_dict[feature[1]]])
+        else:
+            label = torch.LongTensor([len(self.labels)])
+        
+        return audio, label
+
 
 
 training_dataset = SpeechDataset(labels_path='train\\testing_list.txt')
 validation_dataset = SpeechDataset(labels_path='train\\validation_list.txt')
 training_dataloader = torch.utils.data.DataLoader(training_dataset, batch_size=1, shuffle=True)
+validation_dataloader = torch.utils.data.DataLoader(validation_dataset, batch_size=1, shuffle=True)
+
+processed_training_dataset = ProcessedSpeechDataset(feature_list='features_training.pkl')
+processed_validation_dataset = ProcessedSpeechDataset(feature_list='features_validation.pkl')
 
 if __name__=='__main__':
     dataset = SpeechDataset('train\\audio')
