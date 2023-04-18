@@ -1,6 +1,8 @@
 import collections
 import contextlib
 import wave
+import librosa
+import os
 import numpy as np
 from scipy.io import wavfile
 from scipy import signal
@@ -133,6 +135,13 @@ def vad_collector(sample_rate, frame_duration_ms,
 
 
 def perform_vad(wav_file_path, new_file_path):
+    
+    """
+    Performs voice activity detection on a wav file.
+    Parameters:
+    wav_file_path: path to the wav file
+    new_file_path: path to the new wav file
+    """
    
     audio, sample_rate = read_wave(wav_file_path)
     vad = webrtcvad.Vad(1)
@@ -143,14 +152,31 @@ def perform_vad(wav_file_path, new_file_path):
         write_wave(new_file_path, segment, sample_rate)
 
 
-def resample_wav(wav_file_path, new_sample_rate):
+def resample_wav(wav_file_path, new_file_path, new_sample_rate):
+    
+    """
+    Resamples a wav file to a new sample rate.
+    Parameters:
+    wav_file_path: path to the wav file
+    new_file_path: path to the new wav file
+    new_sample_rate: new sample rate
+    """
+
     sample_rate, samples = wavfile.read(wav_file_path)
     resampled = signal.resample(samples, int(new_sample_rate/sample_rate * samples.shape[0]))
-    wavfile.write(wav_file_path, new_sample_rate, resampled.astype(np.int16))
+    wavfile.write(new_file_path, new_sample_rate, resampled.astype(np.int16))
 
 
 def padding(wav_file_path, new_path, pad_ms=1000):
     
+    """
+    Pads a wav file with silence.
+    Parameters:
+    wav_file_path: path to the wav file
+    new_file_path: path to the new wav file
+    pad_ms: clip duration in milliseconds after padding
+    """
+
     audio = AudioSegment.from_wav(wav_file_path)
     silence = AudioSegment.silent(duration=pad_ms-len(audio)+1)
     
@@ -158,7 +184,42 @@ def padding(wav_file_path, new_path, pad_ms=1000):
     padded = audio + silence
     padded.export(new_path, format='wav')
 
+def cut_wav_into_clips(wav_file_path, new_file_path, name, clip_duration_ms=1000):
+    
+    """
+    Cuts a wav file to clips of a given duration.
+    Parameters:
+    wav_file_path: path to the wav file
+    new_file_path: path to the new wav file
+    name: name of the new clips
+    clip_duration_ms: clip duration in milliseconds
+    """
 
+    audio = AudioSegment.from_wav(wav_file_path)
+    for i, chunk in enumerate(audio[::clip_duration_ms]):
+        chunk.export(f"{new_file_path}\\{name + str(i)}" + '.wav', format='wav')
+
+def extract_features(wav_file_path, mfccs=True, deltas=True, delta_deltas=True):
+    """
+    Extracts features from a wav file.
+    Parameters:
+    wav_file_path: path to the wav file
+    Returns:
+    features: features
+    label: label of the wav file
+    """
+
+    audio, sample_rate = librosa.load(wav_file_path)
+
+    if mfccs:
+        mfccs = librosa.feature.mfcc(y=audio, sr=sample_rate, n_mfcc=13)
+    if deltas:
+        delta = librosa.feature.delta(mfccs)
+    if delta_deltas:
+        delta_delta = librosa.feature.delta(mfccs, order=2)
+    features = np.concatenate([mfccs, delta, delta_delta], axis=0)
+   
+    return features
 
 if __name__ == '__main__':
     wav_file = 'samples\\sample.wav'
