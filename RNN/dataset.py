@@ -59,7 +59,7 @@ class SpeechDataset(Dataset):
 
 class ProcessedSpeechDataset(Dataset):
     
-    def __init__(self, feature_list='features_training.pkl', labels=LABELS):
+    def __init__(self, feature_list='extracted_features\\features_training.pkl', labels=LABELS):
         self.feature_list = feature_list
         self.labels = labels
         self.features = None
@@ -91,8 +91,8 @@ validation_dataset = SpeechDataset(labels_path='train\\validation_list.txt')
 training_dataloader = torch.utils.data.DataLoader(training_dataset, batch_size=1, shuffle=True)
 validation_dataloader = torch.utils.data.DataLoader(validation_dataset, batch_size=1, shuffle=True)
 
-processed_training_dataset = ProcessedSpeechDataset(feature_list='features_training.pkl')
-processed_validation_dataset = ProcessedSpeechDataset(feature_list='features_validation.pkl')
+processed_training_dataset = ProcessedSpeechDataset(feature_list='extracted_features\\features_training.pkl')
+processed_validation_dataset = ProcessedSpeechDataset(feature_list='extracted_features\\features_validation.pkl')
 
 if __name__=='__main__':
     dataset = SpeechDataset('train\\audio')
