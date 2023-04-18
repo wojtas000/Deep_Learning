@@ -95,7 +95,7 @@ processed_training_dataset = ProcessedSpeechDataset(feature_list='extracted_feat
 processed_validation_dataset = ProcessedSpeechDataset(feature_list='extracted_features\\features_validation.pkl')
 
 silence_detection_training_dataset = ProcessedSpeechDataset(feature_list='extracted_features\\silence_detection_training.pkl', labels={'silence': 0})
-silence_detection_validation_dataset = ProcessedSpeechDataset(feature_list='extracted_features\\snce_detectionile_validation.pkl', labels={'silence': 0})
+silence_detection_validation_dataset = ProcessedSpeechDataset(feature_list='extracted_features\\silence_detection_validation.pkl', labels={'silence': 0})
 
 if __name__=='__main__':
     dataset = SpeechDataset('train\\audio')
