@@ -9,4 +9,4 @@ RNN/working_sample.wav
 RNN/workspace.ipynb
 RNN/extracted_features/features_training.pkl
 RNN/extracted_features/silence_detection_training.pkl
-RNN/extracted_features/
+RNN/bin.py

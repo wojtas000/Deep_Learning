@@ -1,8 +1,10 @@
 import os
 import librosa
+import pandas as pd
 import numpy as np
 import torch
 import pickle
+import tensorflow as tf
 from torch.utils.data import Dataset
 from IPython.display import Audio, display
 
@@ -96,6 +98,37 @@ processed_validation_dataset = ProcessedSpeechDataset(feature_list='extracted_fe
 
 silence_detection_training_dataset = ProcessedSpeechDataset(feature_list='extracted_features\\silence_detection_training.pkl', labels={'silence': 0})
 silence_detection_validation_dataset = ProcessedSpeechDataset(feature_list='extracted_features\\silence_detection_validation.pkl', labels={'silence': 0})
+
+
+# tensorflow dataset
+
+class TensorflowDataset():
+     
+   def __init__(self, pickle_file='extracted_features\\features_validation.pkl', labels=LABELS):
+      self.labels = labels
+      self.dict = {label: i for i, label in enumerate(self.labels)}
+      
+      features = pd.read_pickle(pickle_file)
+      X = np.array([x[0] for x in features])
+      y = np.array([self.dict[x[1]] if x[1] in self.dict.keys() else len(self.labels) for x in features]) 
+      
+      self.dataset = tf.data.Dataset.from_tensor_slices((X, y))
+   
+   def __len__(self):
+      return len(self.dataset)
+
+label_detection_training = TensorflowDataset('extracted_features\\features_training.pkl', labels=LABELS).dataset
+label_detection_training = label_detection_training.shuffle(len(label_detection_training), reshuffle_each_iteration=True)
+
+label_detection_validation = TensorflowDataset('extracted_features\\features_validation.pkl', labels=LABELS).dataset
+label_detection_validation = label_detection_validation.shuffle(len(label_detection_validation), reshuffle_each_iteration=True)
+
+silence_detection_training = TensorflowDataset('extracted_features\\silence_detection_training.pkl', labels=['silence']).dataset
+silence_detection_training = silence_detection_training.shuffle(len(silence_detection_training), reshuffle_each_iteration=True)
+
+silence_detection_validation = TensorflowDataset('extracted_features\\silence_detection_validation.pkl', labels=['silence']).dataset
+silence_detection_validation = silence_detection_validation.shuffle(len(silence_detection_validation), reshuffle_each_iteration=True)
+
 
 if __name__=='__main__':
     dataset = SpeechDataset('train\\audio')
