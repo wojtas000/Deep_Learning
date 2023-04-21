@@ -9,7 +9,7 @@ from keras.callbacks import ModelCheckpoint, EarlyStopping
 
 
 class Lstm:
-    def __init__(self, lstm_units=64, dropout_rate=0.2, epoch=10, batch_size=32, learning_rate=0.001, input_shape=(39,44), num_classes=30, model_path='models\\lstm.h5'):
+    def __init__(self, lstm_units=64, dropout_rate=0.2, epoch=10, batch_size=32, learning_rate=0.001, input_shape=(39,44), num_classes=30, model_path='models\\lstm.h5', from_path=False):
         self.lstm_units = lstm_units
         self.dropout_rate = dropout_rate
         self.epoch = epoch
@@ -20,7 +20,12 @@ class Lstm:
         self.model = None
         self.history = None
         self.model_path = model_path
-        self.model = self.build_model()
+        self.from_path=from_path
+        
+        if self.from_path:
+            self.model = tf.keras.models.load_model(self.from_path)
+        else:
+            self.model = self.build_model()
     
     def build_model(self):
         model = Sequential([
@@ -66,7 +71,7 @@ class Lstm:
     
 
 class Gru:
-    def __init__(self, gru_units=64, dropout_rate=0.2, epoch=10, batch_size=32, learning_rate=0.001, input_shape=(39,44), num_classes=30, model_path='models\\gru.h5'):
+    def __init__(self, gru_units=64, dropout_rate=0.2, epoch=10, batch_size=32, learning_rate=0.001, input_shape=(39,44), num_classes=30, model_path='models\\gru.h5', from_path=False):
         self.gru_units = gru_units
         self.dropout_rate = dropout_rate
         self.epoch = epoch
@@ -77,7 +82,12 @@ class Gru:
         self.model = None
         self.history = None
         self.model_path = model_path
-        self.model = self.build_model()
+        self.from_path=from_path
+        
+        if self.from_path:
+            self.model = tf.keras.models.load_model(self.from_path)
+        else:
+            self.model = self.build_model()
     
     def build_model(self):
         model = Sequential([
@@ -162,7 +172,7 @@ class TransformerBlock(tf.keras.layers.Layer):
 
 
 class Transformer:
-    def __init__(self, num_heads=2, num_layers=1, dropout_rate=0.2, epoch=10, batch_size=32, learning_rate=0.001, input_shape=(39,44), num_classes=30, model_path='models\\transformer.h5'):
+    def __init__(self, num_heads=2, num_layers=1, dropout_rate=0.2, epoch=10, batch_size=32, learning_rate=0.001, input_shape=(39,44), num_classes=30, model_path='models\\transformer.h5', from_path=False):
         self.num_heads = num_heads
         self.num_layers = num_layers
         self.dropout_rate = dropout_rate
@@ -174,7 +184,12 @@ class Transformer:
         self.model = None
         self.history = None
         self.model_path = model_path
-        self.model = self.build_model()
+        self.from_path=from_path
+        
+        if self.from_path:
+            self.model = tf.keras.models.load_model(self.from_path)
+        else:
+            self.model = self.build_model()
     
     def build_model(self):
         inputs = tf.keras.Input(shape=self.input_shape)
