@@ -118,17 +118,20 @@ class TensorflowDataset():
       return len(self.dataset)
 
 label_detection_training = TensorflowDataset('extracted_features\\features_training.pkl', labels=LABELS).dataset
-label_detection_training = label_detection_training.shuffle(len(label_detection_training), reshuffle_each_iteration=True)
-
 label_detection_validation = TensorflowDataset('extracted_features\\features_validation.pkl', labels=LABELS).dataset
+label_detection_full = label_detection_training.concatenate(label_detection_validation)
+
+label_detection_training = label_detection_training.shuffle(len(label_detection_training), reshuffle_each_iteration=True)
 label_detection_validation = label_detection_validation.shuffle(len(label_detection_validation), reshuffle_each_iteration=True)
+label_detection_full = label_detection_full.shuffle(len(label_detection_full), reshuffle_each_iteration=True)
 
 silence_detection_training = TensorflowDataset('extracted_features\\silence_detection_training.pkl', labels=['silence']).dataset
-silence_detection_training = silence_detection_training.shuffle(len(silence_detection_training), reshuffle_each_iteration=True)
-
 silence_detection_validation = TensorflowDataset('extracted_features\\silence_detection_validation.pkl', labels=['silence']).dataset
-silence_detection_validation = silence_detection_validation.shuffle(len(silence_detection_validation), reshuffle_each_iteration=True)
+silence_detection_full = silence_detection_training.concatenate(silence_detection_validation)
 
+silence_detection_training = silence_detection_training.shuffle(len(silence_detection_training), reshuffle_each_iteration=True)
+silence_detection_validation = silence_detection_validation.shuffle(len(silence_detection_validation), reshuffle_each_iteration=True)
+silence_detection_full = silence_detection_full.shuffle(len(silence_detection_full), reshuffle_each_iteration=True)
 
 if __name__=='__main__':
     dataset = SpeechDataset('train\\audio')
