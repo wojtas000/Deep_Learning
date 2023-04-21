@@ -8,6 +8,7 @@ from scipy.io import wavfile
 from scipy import signal
 import webrtcvad
 from pydub import AudioSegment
+import shutil
 
 
 # This part is originated from https://github.com/wiseman/py-webrtcvad/blob/master/example.py
@@ -148,8 +149,17 @@ def perform_vad(wav_file_path, new_file_path):
     frames = frame_generator(30, audio, sample_rate)
     frames = list(frames)
     segments = vad_collector(sample_rate, 30, 300, vad, frames)
+    
+    k = 0    
+
     for i, segment in enumerate(segments):
         write_wave(new_file_path, segment, sample_rate)
+        k += 1
+    
+    if k == 0:
+        shutil.copy(wav_file_path, new_file_path)
+
+    return k
 
 
 def resample_wav(wav_file_path, new_file_path, new_sample_rate):
@@ -223,7 +233,7 @@ def extract_features(wav_file_path, mfccs=True, deltas=True, delta_deltas=True):
 
 if __name__ == '__main__':
     wav_file = 'samples\\sample.wav'
-    wav_file2 = 'samples\\processed_sample.wav'
+    wav_file2 = 'working_sample.wav'
     perform_vad(wav_file, wav_file2)
     padding(wav_file2, wav_file2, 1000)
-    resample_wav(wav_file2, 8000)
+    resample_wav(wav_file2, wav_file2, 8000)
