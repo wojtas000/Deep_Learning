@@ -48,11 +48,17 @@ class Lstm:
         model.compile(loss=tf.keras.losses.SparseCategoricalCrossentropy(), optimizer=Adam(learning_rate=self.learning_rate), metrics=['accuracy'])
         return model
     
-    def train(self, train_Dataset, val_Dataset):
-        checkpoint = ModelCheckpoint(self.model_path, monitor='val_accuracy', verbose=1, save_best_only=True, mode='max')
-        early = EarlyStopping(monitor='val_accuracy', mode='max', patience=5)
-        callbacks_list = [checkpoint, early]
-        self.history = self.model.fit(train_Dataset.batch(batch_size=self.batch_size), validation_data=val_Dataset.batch(batch_size=self.batch_size), epochs=self.epoch, callbacks=callbacks_list)
+    def train(self, train_Dataset, val_Dataset = None):
+        if val_Dataset is None:
+            checkpoint = ModelCheckpoint(self.model_path, monitor='accuracy', verbose=1, save_best_only=True, mode='max')
+            early = EarlyStopping(monitor='accuracy', mode='max', patience=5)
+            callbacks_list = [checkpoint, early]
+            self.history = self.model.fit(train_Dataset.batch(batch_size=self.batch_size), epochs=self.epoch, callbacks=callbacks_list)
+        else:    
+            checkpoint = ModelCheckpoint(self.model_path, monitor='val_accuracy', verbose=1, save_best_only=True, mode='max')
+            early = EarlyStopping(monitor='val_accuracy', mode='max', patience=5)
+            callbacks_list = [checkpoint, early]
+            self.history = self.model.fit(train_Dataset.batch(self.batch_size), validation_data=val_Dataset.batch(self.batch_size), epochs=self.epoch, callbacks=callbacks_list)
 
     def predict(self, test_Dataset):
         
@@ -116,11 +122,17 @@ class Gru:
         model.compile(loss=tf.keras.losses.SparseCategoricalCrossentropy(), optimizer=Adam(learning_rate=self.learning_rate), metrics=['accuracy'])
         return model
     
-    def train(self, train_Dataset, val_Dataset):
-        checkpoint = ModelCheckpoint(self.model_path, monitor='val_accuracy', verbose=1, save_best_only=True, mode='max')
-        early = EarlyStopping(monitor='val_accuracy', mode='max', patience=5)
-        callbacks_list = [checkpoint, early]
-        self.history = self.model.fit(train_Dataset.batch(self.batch_size), validation_data=val_Dataset.batch(self.batch_size), epochs=self.epoch, callbacks=callbacks_list)
+    def train(self, train_Dataset, val_Dataset = None):
+        if val_Dataset is None:
+            checkpoint = ModelCheckpoint(self.model_path, monitor='accuracy', verbose=1, save_best_only=True, mode='max')
+            early = EarlyStopping(monitor='accuracy', mode='max', patience=5)
+            callbacks_list = [checkpoint, early]
+            self.history = self.model.fit(train_Dataset.batch(batch_size=self.batch_size), epochs=self.epoch, callbacks=callbacks_list)
+        else:    
+            checkpoint = ModelCheckpoint(self.model_path, monitor='val_accuracy', verbose=1, save_best_only=True, mode='max')
+            early = EarlyStopping(monitor='val_accuracy', mode='max', patience=5)
+            callbacks_list = [checkpoint, early]
+            self.history = self.model.fit(train_Dataset.batch(self.batch_size), validation_data=val_Dataset.batch(self.batch_size), epochs=self.epoch, callbacks=callbacks_list)
 
     def predict(self, test_Dataset):
         
@@ -191,11 +203,17 @@ class Transformer:
 
         return model
     
-    def train(self, train_Dataset, val_Dataset):
-        checkpoint = ModelCheckpoint(self.model_path, monitor='val_accuracy', verbose=1, save_best_only=True, mode='max')
-        early = EarlyStopping(monitor='val_accuracy', mode='max', patience=5)
-        callbacks_list = [checkpoint, early]
-        self.history = self.model.fit(train_Dataset.batch(self.batch_size), validation_data=val_Dataset.batch(self.batch_size), epochs=self.epoch, callbacks=callbacks_list)
+    def train(self, train_Dataset, val_Dataset = None):
+        if val_Dataset is None:
+            checkpoint = ModelCheckpoint(self.model_path, monitor='accuracy', verbose=1, save_best_only=True, mode='max')
+            early = EarlyStopping(monitor='accuracy', mode='max', patience=5)
+            callbacks_list = [checkpoint, early]
+            self.history = self.model.fit(train_Dataset.batch(batch_size=self.batch_size), epochs=self.epoch, callbacks=callbacks_list)
+        else:    
+            checkpoint = ModelCheckpoint(self.model_path, monitor='val_accuracy', verbose=1, save_best_only=True, mode='max')
+            early = EarlyStopping(monitor='val_accuracy', mode='max', patience=5)
+            callbacks_list = [checkpoint, early]
+            self.history = self.model.fit(train_Dataset.batch(self.batch_size), validation_data=val_Dataset.batch(self.batch_size), epochs=self.epoch, callbacks=callbacks_list)
 
     def predict(self, test_Dataset):
         
