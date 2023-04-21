@@ -8,7 +8,7 @@ from keras.optimizers import Adam
 from keras.callbacks import ModelCheckpoint, EarlyStopping
 
 
-class LSTM:
+class Lstm:
     def __init__(self, lstm_units=64, dropout_rate=0.2, epoch=10, batch_size=32, learning_rate=0.001, input_shape=(39,44), num_classes=30, model_path='models\\lstm.h5'):
         self.lstm_units = lstm_units
         self.dropout_rate = dropout_rate
@@ -45,21 +45,21 @@ class LSTM:
                             Dense(self.num_classes, activation='softmax')
                         ])
         
-        model.compile(loss='categorical_crossentropy', optimizer=Adam(learning_rate=self.learning_rate), metrics=['accuracy'])
+        model.compile(loss=tf.keras.losses.SparseCategoricalCrossentropy(), optimizer=Adam(learning_rate=self.learning_rate), metrics=['accuracy'])
         return model
     
     def train(self, train_Dataset, val_Dataset):
         checkpoint = ModelCheckpoint(self.model_path, monitor='val_accuracy', verbose=1, save_best_only=True, mode='max')
         early = EarlyStopping(monitor='val_accuracy', mode='max', patience=5)
         callbacks_list = [checkpoint, early]
-        self.history = self.model.fit(train_Dataset, validation_data=(val_Dataset), epochs=self.epoch, batch_size=self.batch_size, callbacks=callbacks_list)
+        self.history = self.model.fit(train_Dataset.batch(batch_size=self.batch_size), validation_data=val_Dataset.batch(batch_size=self.batch_size), epochs=self.epoch, callbacks=callbacks_list)
 
     def predict(self, test_Dataset):
         
-        return np.argmax(self.model.predict(test_Dataset), axis=1)
+        return np.argmax(self.model.predict(test_Dataset.batch(10)), axis=1)
     
 
-class GRU:
+class Gru:
     def __init__(self, gru_units=64, dropout_rate=0.2, epoch=10, batch_size=32, learning_rate=0.001, input_shape=(39,44), num_classes=30, model_path='models\\gru.h5'):
         self.gru_units = gru_units
         self.dropout_rate = dropout_rate
@@ -113,18 +113,18 @@ class GRU:
                         Dense(self.num_classes, activation='softmax')
                     ])
         
-        model.compile(loss='categorical_crossentropy', optimizer=Adam(learning_rate=self.learning_rate), metrics=['accuracy'])
+        model.compile(loss=tf.keras.losses.SparseCategoricalCrossentropy(), optimizer=Adam(learning_rate=self.learning_rate), metrics=['accuracy'])
         return model
     
     def train(self, train_Dataset, val_Dataset):
         checkpoint = ModelCheckpoint(self.model_path, monitor='val_accuracy', verbose=1, save_best_only=True, mode='max')
         early = EarlyStopping(monitor='val_accuracy', mode='max', patience=5)
         callbacks_list = [checkpoint, early]
-        self.history = self.model.fit(train_Dataset, validation_data=(val_Dataset), epochs=self.epoch, batch_size=self.batch_size, callbacks=callbacks_list)
+        self.history = self.model.fit(train_Dataset.batch(self.batch_size), validation_data=val_Dataset.batch(self.batch_size), epochs=self.epoch, callbacks=callbacks_list)
 
     def predict(self, test_Dataset):
         
-        return np.argmax(self.model.predict(test_Dataset), axis=1)
+        return np.argmax(self.model.predict(test_Dataset.batch(10)), axis=1)
     
 
 class TransformerBlock(tf.keras.layers.Layer):
@@ -150,7 +150,7 @@ class TransformerBlock(tf.keras.layers.Layer):
 
 
 class Transformer:
-    def __init__(self, num_heads=2, num_layers=1, dropout_rate=0.2, epoch=10, batch_size=32, learning_rate=0.001, input_shape=(39,44), num_classes=30, model_path='models\\lstm.h5'):
+    def __init__(self, num_heads=2, num_layers=1, dropout_rate=0.2, epoch=10, batch_size=32, learning_rate=0.001, input_shape=(39,44), num_classes=30, model_path='models\\transformer.h5'):
         self.num_heads = num_heads
         self.num_layers = num_layers
         self.dropout_rate = dropout_rate
@@ -187,7 +187,7 @@ class Transformer:
         outputs = Dense(self.num_classes, activation='softmax')(x)
 
         model = tf.keras.Model(inputs=inputs, outputs=outputs)
-        model.compile(loss='categorical_crossentropy', optimizer=Adam(learning_rate=self.learning_rate), metrics=['accuracy'])
+        model.compile(loss=tf.keras.losses.SparseCategoricalCrossentropy(), optimizer=Adam(learning_rate=self.learning_rate), metrics=['accuracy'])
 
         return model
     
@@ -195,8 +195,8 @@ class Transformer:
         checkpoint = ModelCheckpoint(self.model_path, monitor='val_accuracy', verbose=1, save_best_only=True, mode='max')
         early = EarlyStopping(monitor='val_accuracy', mode='max', patience=5)
         callbacks_list = [checkpoint, early]
-        self.history = self.model.fit(train_Dataset, validation_data=(val_Dataset), epochs=self.epoch, batch_size=self.batch_size, callbacks=callbacks_list)
+        self.history = self.model.fit(train_Dataset.batch(self.batch_size), validation_data=val_Dataset.batch(self.batch_size), epochs=self.epoch, callbacks=callbacks_list)
 
     def predict(self, test_Dataset):
         
-        return np.argmax(self.model.predict(test_Dataset), axis=1)
+        return np.argmax(self.model.predict(test_Dataset.batch(10)), axis=1)
