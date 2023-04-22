@@ -1,7 +1,7 @@
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.layers import LSTM, GRU, Dropout, Dense, Bidirectional, TimeDistributed, BatchNormalization, Conv1D, MaxPooling1D, Flatten, GlobalMaxPooling1D, MultiHeadAttention, LayerNormalization
-
+import tensorflow.keras.backend as K
 
 from keras.models import Sequential
 from keras.optimizers import Adam
@@ -187,7 +187,10 @@ class Transformer:
         self.from_path=from_path
         
         if self.from_path:
-            self.model = tf.keras.models.load_model(self.from_path)
+            with K.get_session():
+                model = tf.keras.models.load_model(model_path, custom_objects=self.custom_objects())
+            self.model = model
+        
         else:
             self.model = self.build_model()
     
@@ -233,3 +236,6 @@ class Transformer:
     def predict(self, test_Dataset):
         
         return np.argmax(self.model.predict(test_Dataset.batch(10)), axis=1)
+    
+    def custom_objects():
+            return {"TransformerBlock": TransformerBlock}
