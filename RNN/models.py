@@ -1,4 +1,5 @@
 import numpy as np
+import os
 import tensorflow as tf
 from tensorflow.keras.layers import LSTM, GRU, Dropout, Dense, Bidirectional, TimeDistributed, BatchNormalization, Conv1D, MaxPooling1D, Flatten, GlobalMaxPooling1D, MultiHeadAttention, LayerNormalization
 import tensorflow.keras.backend as K
@@ -8,8 +9,26 @@ from keras.optimizers import Adam
 from keras.callbacks import ModelCheckpoint, EarlyStopping
 
 
+file_dir = os.path.dirname(os.path.abspath(__file__))
+
 class Lstm:
-    def __init__(self, lstm_units=64, dropout_rate=0.2, epoch=10, batch_size=32, learning_rate=0.001, input_shape=(39,44), num_classes=30, model_path='models\\lstm.h5', from_path=False):
+    """
+    LSTM model class.
+    """
+    def __init__(self, lstm_units=64, dropout_rate=0.2, epoch=10, batch_size=32, learning_rate=0.001, input_shape=(39,44), num_classes=30, model_path=os.path.join(file_dir, 'models\\lstm.h5'), from_path=False):
+        """
+        Args:
+            lstm_units (int): Number of units in the LSTM layer.
+            dropout_rate (float): Dropout rate.
+            epoch (int): Number of epochs.
+            batch_size (int): Batch size.
+            learning_rate (float): Learning rate.
+            input_shape (tuple): Input shape.
+            num_classes (int): Number of classes.
+            model_path (string): Path to save the model.
+            from_path (string): Path to load the model from.
+        """
+
         self.lstm_units = lstm_units
         self.dropout_rate = dropout_rate
         self.epoch = epoch
@@ -28,6 +47,12 @@ class Lstm:
             self.model = self.build_model()
     
     def build_model(self):
+        """
+        Build the model.
+        Returns:
+            model (keras.model): The model.
+        """
+
         model = Sequential([
                             Bidirectional(LSTM(self.lstm_units, return_sequences=True), input_shape=self.input_shape),
                             BatchNormalization(),
@@ -54,6 +79,13 @@ class Lstm:
         return model
     
     def train(self, train_Dataset, val_Dataset = None):
+        """
+        Train the model.
+        Args:
+            train_Dataset (tf.data.Dataset): Training dataset.
+            val_Dataset (tf.data.Dataset): Validation dataset.
+        """
+
         if val_Dataset is None:
             checkpoint = ModelCheckpoint(self.model_path, monitor='accuracy', verbose=1, save_best_only=True, mode='max')
             early = EarlyStopping(monitor='accuracy', mode='max', patience=5)
@@ -66,12 +98,35 @@ class Lstm:
             self.history = self.model.fit(train_Dataset.batch(self.batch_size), validation_data=val_Dataset.batch(self.batch_size), epochs=self.epoch, callbacks=callbacks_list)
 
     def predict(self, test_Dataset):
-        
+        """
+        Predict the labels of the test dataset.
+        Args:
+            test_Dataset (tf.data.Dataset): Test dataset.
+        Returns:
+            np.array: Predicted labels.
+        """
+
         return np.argmax(self.model.predict(test_Dataset.batch(10)), axis=1)
     
 
 class Gru:
-    def __init__(self, gru_units=64, dropout_rate=0.2, epoch=10, batch_size=32, learning_rate=0.001, input_shape=(39,44), num_classes=30, model_path='models\\gru.h5', from_path=False):
+    """
+    GRU model class.
+    """
+    def __init__(self, gru_units=64, dropout_rate=0.2, epoch=10, batch_size=32, learning_rate=0.001, input_shape=(39,44), num_classes=30, model_path=os.path.join(file_dir, 'models\\gru.h5'), from_path=False):
+        """
+        Args:
+            gru_units (int): Number of units in the GRU layer.
+            dropout_rate (float): Dropout rate.
+            epoch (int): Number of epochs.
+            batch_size (int): Batch size.
+            learning_rate (float): Learning rate.
+            input_shape (tuple): Input shape.
+            num_classes (int): Number of classes.
+            model_path (string): Path to save the model.
+            from_path (string): Path to load the model from.
+        """
+        
         self.gru_units = gru_units
         self.dropout_rate = dropout_rate
         self.epoch = epoch
@@ -90,6 +145,12 @@ class Gru:
             self.model = self.build_model()
     
     def build_model(self):
+        """
+        Build the model.
+        Returns:
+            model (keras.model): The model.
+        """
+
         model = Sequential([
                         Conv1D(filters=128, kernel_size=3, activation='relu', input_shape=self.input_shape),
                         BatchNormalization(),
@@ -133,6 +194,13 @@ class Gru:
         return model
     
     def train(self, train_Dataset, val_Dataset = None):
+        """
+        Train the model.
+        Args:
+            train_Dataset (tf.data.Dataset): Training dataset.
+            val_Dataset (tf.data.Dataset): Validation dataset.
+        """
+
         if val_Dataset is None:
             checkpoint = ModelCheckpoint(self.model_path, monitor='accuracy', verbose=1, save_best_only=True, mode='max')
             early = EarlyStopping(monitor='accuracy', mode='max', patience=5)
@@ -145,12 +213,28 @@ class Gru:
             self.history = self.model.fit(train_Dataset.batch(self.batch_size), validation_data=val_Dataset.batch(self.batch_size), epochs=self.epoch, callbacks=callbacks_list)
 
     def predict(self, test_Dataset):
-        
+        """
+        Predict the labels of the test dataset.
+        Args:
+            test_Dataset (tf.data.Dataset): Test dataset.
+        Returns:
+            np.array: Predicted labels.
+        """
+
         return np.argmax(self.model.predict(test_Dataset.batch(10)), axis=1)
     
 
 class TransformerBlock(tf.keras.layers.Layer):
+    """
+    Transformer block class.
+    """
     def __init__(self, embed_dim, num_heads, dropout_rate, **kwargs):
+        """
+        Args:
+            embed_dim (int): Embedding dimension.
+            num_heads (int): Number of heads in attention.
+            dropout_rate (float): Dropout rate.
+        """
         super(TransformerBlock, self).__init__(**kwargs)
         self.embed_dim = embed_dim
         self.num_heads = num_heads
@@ -166,6 +250,11 @@ class TransformerBlock(tf.keras.layers.Layer):
         self.dropout2 = Dropout(self.dropout_rate)
     
     def get_config(self):
+        """
+        Get the config of the model.
+        Returns:
+            config (dict): The config of the model.
+        """
         config = super(TransformerBlock, self).get_config()
         config.update({
             'embed_dim': self.embed_dim,
@@ -175,6 +264,13 @@ class TransformerBlock(tf.keras.layers.Layer):
         return config
 
     def call(self, inputs):
+        """
+        Call the model.
+        Args:
+            inputs (tf.Tensor): Input tensor.
+        Returns:
+            tf.Tensor: Output tensor.
+        """
         attn_output = self.att(inputs, inputs)
         attn_output = self.dropout1(attn_output)
         out1 = self.layernorm1(inputs + attn_output)
@@ -184,7 +280,25 @@ class TransformerBlock(tf.keras.layers.Layer):
 
 
 class Transformer:
-    def __init__(self, num_heads=2, num_layers=1, dropout_rate=0.2, epoch=10, batch_size=32, learning_rate=0.001, input_shape=(39,44), num_classes=30, model_path='models\\transformer.h5', from_path=False):
+    """
+    Transformer class.
+    """
+    def __init__(self, num_heads=2, num_layers=1, dropout_rate=0.2, epoch=10, batch_size=32, learning_rate=0.001, input_shape=(39,44), num_classes=30, model_path=os.path.join(file_dir, 'models\\transformer.h5'), from_path=False):
+        """
+        Args:
+            num_heads (int): Number of heads in attention of transformer block.
+            num_layers (int): Number of layers of transformer block.
+            dropout_rate (float): Dropout rate.
+            epoch (int): Number of epochs.
+            batch_size (int): Batch size.
+            learning_rate (float): Learning rate.
+            input_shape (tuple): Input shape.
+            num_classes (int): Number of classes.
+            model_path (str): Path to save the model.
+            from_path (str): Path to load the model.
+        """
+
+
         self.num_heads = num_heads
         self.num_layers = num_layers
         self.dropout_rate = dropout_rate
@@ -206,6 +320,11 @@ class Transformer:
             self.model = self.build_model()
     
     def build_model(self):
+        """
+        Build the model.
+        Returns:
+            tf.keras.Model: The model.
+        """
         inputs = tf.keras.Input(shape=self.input_shape)
         x = Conv1D(filters=128, kernel_size=3, activation='relu')(inputs)
         x = BatchNormalization()(x)
@@ -233,6 +352,12 @@ class Transformer:
         return model
     
     def train(self, train_Dataset, val_Dataset = None):
+        """
+        Train the model.
+        Args:
+            train_Dataset (tf.data.Dataset): Training dataset.
+            val_Dataset (tf.data.Dataset): Validation dataset.
+        """
         if val_Dataset is None:
             checkpoint = ModelCheckpoint(self.model_path, monitor='accuracy', verbose=1, save_best_only=True, mode='max')
             early = EarlyStopping(monitor='accuracy', mode='max', patience=5)
@@ -245,11 +370,23 @@ class Transformer:
             self.history = self.model.fit(train_Dataset.batch(self.batch_size), validation_data=val_Dataset.batch(self.batch_size), epochs=self.epoch, callbacks=callbacks_list)
 
     def predict(self, test_Dataset):
-        
+        """
+        Predict the model.
+        Args:
+            test_Dataset (tf.data.Dataset): Test dataset.
+        Returns:
+            np.ndarray: Predicted labels.
+        """
         return np.argmax(self.model.predict(test_Dataset.batch(10)), axis=1)
     
     def custom_objects(self):
-            return {"TransformerBlock": TransformerBlock}
+        """
+        Get the custom objects of the model.
+        Returns:
+            dict: Custom objects.
+        """
+        return {"TransformerBlock": TransformerBlock}
+    
     
 if __name__=='__main__':
     from dataset import label_detection_training, label_detection_validation

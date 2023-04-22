@@ -11,7 +11,7 @@ from pydub import AudioSegment
 import shutil
 
 
-# This part is originated from https://github.com/wiseman/py-webrtcvad/blob/master/example.py
+# THIS PART IS ORIGINATED FROM https://github.com/wiseman/py-webrtcvad/blob/master/example.py.
 
 def read_wave(path):
     """Reads a .wav file.
@@ -130,9 +130,8 @@ def vad_collector(sample_rate, frame_duration_ms,
         yield b''.join([f.bytes for f in voiced_frames])
 
 
-#------------------------------------------------------------------------------------------------------------------------------
 
-# These functions are used for preprocessing audio files
+# THESE FUNCTIONS ARE USED FOR PREPROCESSING AUDIO FILES
 
 
 def perform_vad(wav_file_path, new_file_path):
@@ -230,6 +229,7 @@ def extract_features(wav_file_path, mfccs=True, deltas=True, delta_deltas=True):
     features = np.concatenate([mfccs, delta, delta_delta], axis=0)
    
     return features
+
 
 if __name__ == '__main__':
     wav_file = 'samples\\sample.wav'
