@@ -150,17 +150,29 @@ class Gru:
     
 
 class TransformerBlock(tf.keras.layers.Layer):
-    def __init__(self, embed_dim, num_heads, dropout_rate):
-        super(TransformerBlock, self).__init__()
-        self.att = MultiHeadAttention(num_heads=num_heads, key_dim=embed_dim)
+    def __init__(self, embed_dim, num_heads, dropout_rate, **kwargs):
+        super(TransformerBlock, self).__init__(**kwargs)
+        self.embed_dim = embed_dim
+        self.num_heads = num_heads
+        self.dropout_rate = dropout_rate
+        self.att = MultiHeadAttention(num_heads=self.num_heads, key_dim=self.embed_dim)
         self.ffn = Sequential([
-            Dense(embed_dim, activation='relu'),
-            Dense(embed_dim)
+            Dense(self.embed_dim, activation='relu'),
+            Dense(self.embed_dim)
         ])
         self.layernorm1 = LayerNormalization(epsilon=1e-6)
         self.layernorm2 = LayerNormalization(epsilon=1e-6)
-        self.dropout1 = Dropout(dropout_rate)
-        self.dropout2 = Dropout(dropout_rate)
+        self.dropout1 = Dropout(self.dropout_rate)
+        self.dropout2 = Dropout(self.dropout_rate)
+    
+    def get_config(self):
+        config = super(TransformerBlock, self).get_config()
+        config.update({
+            'embed_dim': self.embed_dim,
+            'num_heads': self.num_heads,
+            'dropout_rate': self.dropout_rate
+        })
+        return config
 
     def call(self, inputs):
         attn_output = self.att(inputs, inputs)
@@ -187,8 +199,7 @@ class Transformer:
         self.from_path=from_path
         
         if self.from_path:
-            with K.get_session():
-                model = tf.keras.models.load_model(model_path, custom_objects=self.custom_objects())
+            model = tf.keras.models.load_model(model_path, custom_objects=self.custom_objects())
             self.model = model
         
         else:
@@ -237,5 +248,13 @@ class Transformer:
         
         return np.argmax(self.model.predict(test_Dataset.batch(10)), axis=1)
     
-    def custom_objects():
+    def custom_objects(self):
             return {"TransformerBlock": TransformerBlock}
+    
+if __name__=='__main__':
+    from dataset import label_detection_training, label_detection_validation
+    model = Transformer(epoch=1, num_classes=11, model_path='models\\transformer.h5')
+    model.train(label_detection_validation, label_detection_validation)
+    #save model
+    model2 = Transformer(from_path='models\\transformer.h5')
+    model2.model.summary()
