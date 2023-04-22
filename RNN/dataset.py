@@ -128,6 +128,19 @@ class TensorflowDataset_unknown():
       y = np.array([0 if x[1] in self.dict.keys() else 1 for x in features]) 
       
       self.dataset = tf.data.Dataset.from_tensor_slices((X, y))
+
+class TensorflowDataset_labels():
+     
+   def __init__(self, pickle_file='extracted_features\\features_validation.pkl', labels=LABELS):
+      self.labels = labels
+      self.dict = {label: i for i, label in enumerate(self.labels)}
+      
+      features = pd.read_pickle(pickle_file)
+      X = np.array([x[0] for x in features])
+      y = np.array([self.dict[x[1]] if x[1] in self.dict.keys() else 10 for x in features]) 
+      X = X[y != 10]
+      y = y[y != 10]
+      self.dataset = tf.data.Dataset.from_tensor_slices((X, y))
    
    def __len__(self):
       return len(self.dataset)
@@ -155,6 +168,14 @@ unknown_detection_full = unknown_detection_training.concatenate(unknown_detectio
 unknown_detection_training = unknown_detection_training.shuffle(len(unknown_detection_training), reshuffle_each_iteration=True)
 unknown_detection_validation = unknown_detection_validation.shuffle(len(unknown_detection_validation), reshuffle_each_iteration=True)
 unknown_detection_full = unknown_detection_full.shuffle(len(unknown_detection_full), reshuffle_each_iteration=True)
+
+labels_only_detection_training = TensorflowDataset_labels('extracted_features\\features_training.pkl', labels=LABELS).dataset
+labels_only_detection_validation = TensorflowDataset_labels('extracted_features\\features_validation.pkl', labels=LABELS).dataset
+labels_only_detection_full = unknown_detection_training.concatenate(unknown_detection_validation)
+
+labels_only_detection_training = labels_only_detection_training.shuffle(len(labels_only_detection_training), reshuffle_each_iteration=True)
+labels_only_detection_validation = labels_only_detection_validation.shuffle(len(labels_only_detection_validation), reshuffle_each_iteration=True)
+labels_only_detection_full = labels_only_detection_full.shuffle(len(labels_only_detection_full), reshuffle_each_iteration=True)
 
 if __name__=='__main__':
     dataset = SpeechDataset('train\\audio')
