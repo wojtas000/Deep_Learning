@@ -215,7 +215,6 @@ def extract_features(wav_file_path, mfccs=True, deltas=True, delta_deltas=True):
     wav_file_path: path to the wav file
     Returns:
     features: features
-    label: label of the wav file
     """
 
     audio, sample_rate = librosa.load(wav_file_path)

@@ -110,18 +110,6 @@ class ProcessedSpeechDataset(Dataset):
         return audio, label
 
 
-# training_dataset = SpeechDataset(labels_path='train\\testing_list.txt')
-# validation_dataset = SpeechDataset(labels_path='train\\validation_list.txt')
-# training_dataloader = torch.utils.data.DataLoader(training_dataset, batch_size=1, shuffle=True)
-# validation_dataloader = torch.utils.data.DataLoader(validation_dataset, batch_size=1, shuffle=True)
-
-# processed_training_dataset = ProcessedSpeechDataset(feature_list='extracted_features\\features_training.pkl')
-# processed_validation_dataset = ProcessedSpeechDataset(feature_list='extracted_features\\features_validation.pkl')
-
-# silence_detection_training_dataset = ProcessedSpeechDataset(feature_list='extracted_features\\silence_detection_training.pkl', labels={'silence': 0})
-# silence_detection_validation_dataset = ProcessedSpeechDataset(feature_list='extracted_features\\silence_detection_validation.pkl', labels={'silence': 0})
-
-
 # Tensorflow datasets
 
 
@@ -189,6 +177,8 @@ class TensorflowDataset_labels():
     def __len__(self):
         return len(self.dataset)
 
+
+# Datasets
 
 file_dir = os.path.dirname(os.path.abspath(__file__))
 

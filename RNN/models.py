@@ -283,7 +283,16 @@ class Transformer:
     """
     Transformer class.
     """
-    def __init__(self, num_heads=2, num_layers=1, dropout_rate=0.2, epoch=10, batch_size=32, learning_rate=0.001, input_shape=(39,44), num_classes=30, model_path=os.path.join(file_dir, 'models\\transformer.h5'), from_path=False):
+    def __init__(self, num_heads=2, 
+                 num_layers=1, 
+                 dropout_rate=0.2, 
+                 epoch=10, 
+                 batch_size=32, 
+                 learning_rate=0.001, 
+                 input_shape=(39,44), 
+                 num_classes=30, 
+                 model_path=os.path.join(file_dir, 'models\\transformer.h5'),
+                 from_path=False):
         """
         Args:
             num_heads (int): Number of heads in attention of transformer block.
@@ -313,7 +322,7 @@ class Transformer:
         self.from_path=from_path
         
         if self.from_path:
-            model = tf.keras.models.load_model(model_path, custom_objects=self.custom_objects())
+            model = tf.keras.models.load_model(self.from_path, custom_objects=self.custom_objects())
             self.model = model
         
         else:
