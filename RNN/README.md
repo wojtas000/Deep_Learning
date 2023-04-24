@@ -30,7 +30,7 @@
 
 In order to reproduce best result on testing data from Kaggle you should:
 
-1. Download `.zip` file from the following link: https://drive.google.com/file/d/1DVdjHTMePQvo_fouEO17QIcfPPstDpmm/view?usp=sharing. It contains pickle file of list of detected silence and pickle file containing list of features for testing data.
+1. Download `.zip` file from the following link: https://drive.google.com/file/d/1DVdjHTMePQvo_fouEO17QIcfPPstDpmm/view?usp=sharing. It contains pickle file of list of detected silence and pickle file containing list of features for testing data (due to large size of these files we do not host them on Github Repository)
 2. Unpickle both files, save list of features of test data as tensorflow.data.Dataset 
 3. Load `model\\best_gru_label_vs_unknown.h5` model.
 4. Predict labels for test data with model and preprare kaggle submission
