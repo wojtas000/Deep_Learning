@@ -404,3 +404,26 @@ if __name__=='__main__':
     #save model
     model2 = Transformer(from_path='models\\transformer.h5')
     model2.model.summary()
+
+
+class Ensemble:
+    def __init__(self, model_paths):
+        self.models = []
+        for model in model_paths:
+            self.models.append(tf.keras.models.load_model(model))
+    
+    def predict_mean(self, test_Dataset):
+        predictions = []
+        for model in self.models:
+            predictions.append(model.predict(test_Dataset))
+        predictions = np.array(predictions)
+        return np.argmax(np.mean(predictions, axis=0), axis=1)
+ 
+    
+    def predict_max(self, test_Dataset):
+        predictions = []
+        for model in self.models:
+            predictions.append(model.predict(test_Dataset))
+        predictions = np.array(predictions)
+        return np.argmax(np.max(predictions, axis=0), axis=1)
+      
