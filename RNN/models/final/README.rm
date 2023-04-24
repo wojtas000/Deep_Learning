@@ -1,0 +1,3 @@
+TRAIN - model trained od training dataset
+
+FULL - model trained on training and validation datasets
