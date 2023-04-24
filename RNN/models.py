@@ -407,12 +407,26 @@ if __name__=='__main__':
 
 
 class Ensemble:
+    """
+    Ensemble of models.
+    """
     def __init__(self, model_paths):
+        """
+        Args:
+            model_paths (list): Paths to models.
+        """
         self.models = []
         for model in model_paths:
             self.models.append(tf.keras.models.load_model(model))
     
     def predict_mean(self, test_Dataset):
+        """
+        Predict the model using mean method.
+        Args:
+            test_Dataset (tf.data.Dataset): Test dataset.
+        Returns:
+            np.ndarray: Predicted labels.
+        """
         predictions = []
         for model in self.models:
             predictions.append(model.predict(test_Dataset))
@@ -421,6 +435,13 @@ class Ensemble:
  
     
     def predict_max(self, test_Dataset):
+        """
+        Predict the model using max method.
+        Args:
+            test_Dataset (tf.data.Dataset): Test dataset.
+        Returns:
+            np.ndarray: Predicted labels.
+        """
         predictions = []
         for model in self.models:
             predictions.append(model.predict(test_Dataset))
