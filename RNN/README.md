@@ -35,5 +35,5 @@ In order to reproduce best result on testing data from Kaggle you should:
 3. Load `model\\best_gru_label_vs_unknown.h5` model.
 4. Predict labels for test data with model and preprare kaggle submission
 
-The example of such submission can be found in `example.ipynb` file
+The example of such submission can be found in `ensemble.ipynb` file (for submitting result for GRU and ensemble)
 
