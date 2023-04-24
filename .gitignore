@@ -4,9 +4,7 @@ CNN/saved_models/alex.pt
 CNN/logs/
 CNN/tensorboard.ipynb
 RNN/train/
-RNN/preprocessing.ipynb
 RNN/working_sample.wav
 RNN/workspace.ipynb
-RNN/bin.py
 RNN/test/
 RNN/extracted_features/
