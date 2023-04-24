@@ -1,59 +1,28 @@
-# Useful materials
+# RNN directory structure
 
-1. https://www.youtube.com/watch?v=4_SH2nfbQZ8
-2. https://arxiv.org/pdf/1503.04069.pdf
-3. https://www.youtube.com/watch?v=eCvz-kB4yko&t=956s
-4. https://www.kaggle.com/davids1992/speech-representation-and-data-exploration
+## Folders:
 
-# Useful notes:
+1. `extracted_features` - folder for preprocessed data - after VAD, padding, resampling and feature extraction
+2. `models` - folder with final models. The model which performed best on Kaggle is `best_gru_label_vs_unknown.h5`. We further build an ensemble with this model as base classifier and achieve even better score. The pre-trained models for ensemble are in `models\\ensemble` directory.
+3. `results` - folder with aggregated results from training
+4. `samples` - folder with samples from training data (original and processed)
+5. `submissions` - folder with saved submissions
+6. `Training` - folder with ipynb notebooks that were used to train models (grid search + random search)
 
-1. Data preprocessing:
-- Cut `.wav` files into shorter pieces, by removing silence before and after word. Add optional padding with zeros to fill up to certain time.
-- Normalization of input.
-- Data augmentation: pitch shifting, speed variation, reverberation. 
 
-2. Feature extraction:
-- MFCC.
-- delta and delta-delta coefficients (MFCC and deltas both suggested in [2]).
-- MEL spectrogram (without MFCC extraction).
+## `.py` files
 
-3. Network:
-- Bidirectional LSTM component (might be better than unidirectional LSTM to capture dependencies in both directions).
-- Random search for hyperparams (suggested in [2]).
+1. `dataset.py` - file containing classes for pyTorch and Tensorflow datasets, along with instances of this datasets to import
+2. `models.py` - file containing classes for models 
+3. `preprocessing.py` - file containing funcions and classes devoted to preprocessing of data
 
-REPO STRUCTURE
 
-RNN
-|_'dataset.py', - file containing preprocessed datasets
-|
-|_ 'ensemble.ipynb', - file with code to create ensamble model and submit results
-|
-|_ 'extracted_features', - folder with data
-|
-|_ 'feature_extraction.ipynb', - file with feature extracions
-|
-|_ 'final_model.ipynb', - file that contains all aggregated data in aggregated form
-|
-|_ 'lstm_silence_model.ipynb', - training model to predict silence
-|
-|_ 'MFCC.ipynb', ????
-|
-|_ 'models', - folder with final models
-|
-|_ 'models.py', - file containing classes for mdoels
-|
-|_ 'preprocessing.py', - file with data preprocessing 
-|
-|_ 'results', - folder with aggregated results from training
-|
-|_ 'results.ipynb', - file that keeps classes and confusion matrixs for final concatenated models
-|
-|_ 'samples', - folder with samples
-|
-|_ 'submissions', - folder with saved submissions
-|
-|_ 'test', - test data
-|
-|_ 'train', - training data
-|
-|_ 'Training', - folder with ipynb notebooks that were used to train models
+## `.ipynb` files
+
+1. `ensemble.ipynb` - file with code to create ensamble model and submit results
+2. `feature_extraction.ipynb` - file used for extracting features and saving them to `extracted_features` folder
+3. `final_model.ipynb` - file that contains all aggregated data in aggregated form
+4. `lstm_silence_model.ipynb` - training model to predict silence
+5. `MFCC.ipynb` - file giving general overwiev of the Speech Commands Dataset along with example preprocessing and feature extraction
+6. `results.ipynb` - file that keeps classes and confusion matrices for final models
+
