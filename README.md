@@ -29,7 +29,7 @@ Folders:
 
 ## Recurrent Neural Networks
 
-`RNN` is folder for Convolutional Neural Network project from Deep Learning. 
+`RNN` is folder for Convolutional Neural Network project from Deep Learning. The expiicit description of the project directory can be found in `RNN\\ReadMe.md` file
 
 # Repository contributors:
 - Mikołaj Zalewski
