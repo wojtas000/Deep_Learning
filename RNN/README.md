@@ -19,7 +19,7 @@
 
 ## `.ipynb` files:
 
-1. `ensemble.ipynb` - file with code to create ensamble model and submit results
+1. `example.ipynb` - example file with code to create best GRU model (ensamble model of best GRU) and submit results
 2. `feature_extraction.ipynb` - file used for extracting features and saving them to `extracted_features` folder
 3. `final_model.ipynb` - file that contains all aggregated data in aggregated form
 4. `lstm_silence_model.ipynb` - training model to predict silence
@@ -35,5 +35,5 @@ In order to reproduce best result on testing data from Kaggle you should:
 3. Load `model\\best_gru_label_vs_unknown.h5` model.
 4. Predict labels for test data with model and preprare kaggle submission
 
-The example of such submission can be found in `ensemble.ipynb` file (for submitting result for GRU and ensemble)
+The example of such submission can be found in `example.ipynb` file (for submitting result for GRU and ensemble)
 
