@@ -14,9 +14,8 @@ class GAN:
             generator (nn.Module): Generator network.
             discriminator (nn.Module): Discriminator network.
         """
-        
-        self.generator = generator
-        self.discriminator = discriminator
+        self.generator = generator.to(self.device)
+        self.discriminator = discriminator.to(self.device)
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.history = {'g_losses': [], 'd_losses': []}
 
@@ -31,11 +30,11 @@ class GAN:
         optimizer.zero_grad()
         
         # Compute discriminator loss on real images
-        real_outputs = self.discriminator(real_images)
+        real_outputs = self.discriminator(real_images.to(self.device))
         d_loss_real = criterion(real_outputs, real_labels)
         
         # Compute discriminator loss on fake images
-        fake_outputs = self.discriminator(fake_images.detach())
+        fake_outputs = self.discriminator(fake_images.detach().to(self.device))
         d_loss_fake = criterion(fake_outputs, fake_labels)
         
         # Total discriminator loss
@@ -52,7 +51,6 @@ class GAN:
         batch_size = fake_images.size(0)
         real_labels = torch.ones(batch_size, 1).to(self.device)
 
-        
         # Compute generator loss
         g_loss = criterion(fake_images_outputs, real_labels)
         
@@ -77,6 +75,7 @@ class GAN:
             d_losses = 0
             
             for real_images, _ in tqdm(dataloader):
+                real_images = real_images.to(self.device)
             
                 batch_size = real_images.size(0)
                 
@@ -93,9 +92,9 @@ class GAN:
                 fake_images_outputs = self.discriminator(fake_images)
                 
                 g_loss = self.train_generator_step(optimizer=generator_optimizer, 
-                                        criterion=criterion, 
-                                        fake_images=fake_images, 
-                                        fake_images_outputs=fake_images_outputs)
+                                                   criterion=criterion, 
+                                                   fake_images=fake_images, 
+                                                   fake_images_outputs=fake_images_outputs)
                 
                 g_losses += g_loss
                 d_losses += d_loss
