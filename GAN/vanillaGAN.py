@@ -11,7 +11,7 @@ class LinearBlock(nn.Module):
     Linear block for MLP.
     """
     
-    def __init__(self, in_features, out_features, activation=False, batch_norm=True):
+    def __init__(self, in_features, out_features, activation=False, batch_norm=True, dropout=False, p=0.5):
         """
         Args:
             in_features (int): Number of input features.
@@ -23,6 +23,7 @@ class LinearBlock(nn.Module):
         self.linear = nn.Linear(in_features, out_features)
         self.activation = activation if activation else None
         self.batch_norm = nn.BatchNorm1d(out_features) if batch_norm else None
+        self.dropout = nn.Dropout(p=p) if dropout else None
         
     def forward(self, x):
         x = self.linear(x)
@@ -30,6 +31,8 @@ class LinearBlock(nn.Module):
             x = self.activation(x)
         if self.batch_norm:
             x = self.batch_norm(x)
+        if self.dropout:
+            x = self.dropout(x)
         return x
 
 
@@ -79,10 +82,10 @@ class VanillaGAN_Discriminator(nn.Module):
         
         super(VanillaGAN_Discriminator, self).__init__()
         self.model = nn.Sequential(
-            LinearBlock(int(torch.prod(torch.tensor(img_shape))), 512, activation=nn.LeakyReLU(0.2), batch_norm=False),
-            LinearBlock(512, 256, activation=nn.LeakyReLU(0.2), batch_norm=False),
-            LinearBlock(256, 128, activation=nn.LeakyReLU(0.2), batch_norm=False),
-            LinearBlock(128, 1, activation=nn.Sigmoid(), batch_norm=False)
+            LinearBlock(int(torch.prod(torch.tensor(img_shape))), 512, activation=nn.LeakyReLU(0.2), batch_norm=False, dropout=True, p=0.5),
+            LinearBlock(512, 256, activation=nn.LeakyReLU(0.2), batch_norm=False, dropout=True, p=0.5),
+            LinearBlock(256, 128, activation=nn.LeakyReLU(0.2), batch_norm=False, dropout=True, p=0.5),
+            LinearBlock(128, 1, activation=nn.Sigmoid(), batch_norm=False, dropout=False)
         )
 
     def forward(self, x):
