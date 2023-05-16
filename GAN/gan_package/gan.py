@@ -14,9 +14,9 @@ class GAN:
             generator (nn.Module): Generator network.
             discriminator (nn.Module): Discriminator network.
         """
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.generator = generator.to(self.device)
         self.discriminator = discriminator.to(self.device)
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.history = {'g_losses': [], 'd_losses': []}
 
 
