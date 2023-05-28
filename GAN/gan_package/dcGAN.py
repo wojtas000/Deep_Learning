@@ -71,6 +71,9 @@ class DCGAN_Generator(nn.Module):
             num_channels (int): Number of channels of output image.
         """
         super(DCGAN_Generator, self).__init__()
+        self.latent_dim = latent_dim
+        self.num_channels = num_channels
+        self.feature_maps_size = feature_maps_size
         self.model = nn.Sequential(
             # input: latent_dim x 1 x 1
             ConvTransposedBlock(latent_dim, feature_maps_size * 32, 4, 1, 0),
@@ -99,7 +102,7 @@ class DCGAN_Discriminator(nn.Module):
     """
     Discriminator for DCGAN.
     """
-    def __init__(self, num_channels, feature_maps_size, n_out=1):
+    def __init__(self, num_channels=3, feature_maps_size=64, n_out=1):
         """
         Args:
             num_channels (int): Number of channels of input image.
