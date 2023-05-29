@@ -1,6 +1,11 @@
 import torch.nn as nn
 import torch
 from tqdm import tqdm
+import torch
+from torch import nn
+from torchvision.models import inception_v3
+from scipy.linalg import sqrtm
+import numpy as np
 
 class GAN:
     
@@ -17,7 +22,29 @@ class GAN:
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.generator = generator.to(self.device)
         self.discriminator = discriminator.to(self.device)
-        self.history = {'g_losses': [], 'd_losses': []}
+        self.history = {'g_losses': [], 'd_losses': [], 'fid_scores': []}
+        self.inception_model = inception_v3(pretrained=True, transform_input=False).to(self.device)
+        self.inception_model.eval()
+
+
+    def compute_inception_activations(self, images, batch_size):
+        num_samples = images.size(0)
+        num_batches = num_samples // batch_size
+        activations = []
+
+        with torch.no_grad():
+            for i in range(num_batches):
+                start = i * batch_size
+                end = start + batch_size
+                batch = images[start:end].to(self.device)
+                activations.append(self.inception_model(batch)[0].view(batch_size, -1).cpu().numpy())
+
+            if num_samples % batch_size != 0:
+                start = num_batches * batch_size
+                batch = images[start:].to(self.device)
+                activations.append(self.inception_model(batch)[0].view(batch.size(0), -1).cpu().numpy())
+
+        return np.concatenate(activations, axis=0)
 
 
     def train_discriminator_step(self, optimizer, criterion, real_images, fake_images):
@@ -112,6 +139,8 @@ class GAN:
 
     def save_discriminator(self, path):
         torch.save(self.discriminator.state_dict(), path)
+
+
 
 
 
