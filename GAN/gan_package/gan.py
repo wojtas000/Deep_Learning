@@ -6,6 +6,7 @@ from torch import nn
 from torchvision.models import inception_v3
 from scipy.linalg import sqrtm
 import numpy as np
+from torchvision.transforms import ToTensor
 
 class GAN:
     
@@ -13,7 +14,7 @@ class GAN:
     GAN class.
     """
 
-    def __init__(self, generator, discriminator):
+    def __init__(self, generator, discriminator, inception_model):
         """
         Args:
             generator (nn.Module): Generator network.
@@ -23,29 +24,8 @@ class GAN:
         self.generator = generator.to(self.device)
         self.discriminator = discriminator.to(self.device)
         self.history = {'g_losses': [], 'd_losses': [], 'fid_scores': []}
-        self.inception_model = inception_v3(pretrained=True, transform_input=False).to(self.device)
+        self.inception_model = inception_model
         self.inception_model.eval()
-
-
-    def compute_inception_activations(self, images, batch_size):
-        num_samples = images.size(0)
-        num_batches = num_samples // batch_size
-        activations = []
-
-        with torch.no_grad():
-            for i in range(num_batches):
-                start = i * batch_size
-                end = start + batch_size
-                batch = images[start:end].to(self.device)
-                activations.append(self.inception_model(batch)[0].view(batch_size, -1).cpu().numpy())
-
-            if num_samples % batch_size != 0:
-                start = num_batches * batch_size
-                batch = images[start:].to(self.device)
-                activations.append(self.inception_model(batch)[0].view(batch.size(0), -1).cpu().numpy())
-
-        return np.concatenate(activations, axis=0)
-
 
     def train_discriminator_step(self, optimizer, criterion, real_images, fake_images):
         batch_size = real_images.size(0)
@@ -126,11 +106,14 @@ class GAN:
                 g_losses += g_loss
                 d_losses += d_loss
             
+            # Calculate FID score
+            fid_score = self.calculate_fid_score(real_images, fake_images, batch_size)
+            self.history['fid_scores'].append(fid_score)
             self.history['g_losses'].append(g_losses/len(dataloader.dataset))
             self.history['d_losses'].append(d_losses/len(dataloader.dataset))
 
             print(f'Epoch {epoch+1}/{num_epochs}: Generator loss: {g_loss/len(dataloader.dataset)}',  
-                  f'Discriminator loss: {d_loss/len(dataloader.dataset)}')
+                  f'Discriminator loss: {d_loss/len(dataloader.dataset)}, FID score: {fid_score}')
 
 
     def save_generator(self, path):
@@ -141,6 +124,42 @@ class GAN:
         torch.save(self.discriminator.state_dict(), path)
 
 
+    def calculate_fid_score(self, real_images, generated_images, batch_size):
+
+        # Convert images to PyTorch tensors
+        real_images = torch.stack([ToTensor()(img) for img in real_images])
+        generated_images = torch.stack([ToTensor()(img) for img in generated_images])
+
+        # Pass images through Inception model to get activations
+        real_activations = self.inception_model(real_images)[0].view(real_images.shape[0], -1)
+        generated_activations = self.inception_model(generated_images)[0].view(generated_images.shape[0], -1)
+
+        # Compute mean and covariance of activations
+        real_mean = torch.mean(real_activations, dim=0)
+        real_cov = GAN.torch_cov(real_activations, rowvar=False)
+        generated_mean = torch.mean(generated_activations, dim=0)
+        generated_cov = GAN.torch_cov(generated_activations, rowvar=False)
+
+        # Calculate FID score
+        score = GAN.calculate_frechet_distance(real_mean, real_cov, generated_mean, generated_cov)
+
+        return score
+
+    @staticmethod
+    def torch_cov(x, rowvar=False):
+        mean = torch.mean(x, dim=0, keepdim=True)
+        if rowvar:
+            cov = torch.matmul((x - mean).t(), x - mean) / (x.size(0) - 1)
+        else:
+            cov = torch.matmul((x - mean), (x - mean).t()) / (x.size(1) - 1)
+        return cov
+
+    @staticmethod
+    def calculate_frechet_distance(mu1, sigma1, mu2, sigma2):
+        diff = mu1 - mu2
+        covmean, _ = torch.sqrtm(sigma1 @ sigma2, True)
+        score = torch.real(torch.trace(sigma1 + sigma2 - 2 * covmean)) + torch.sum(diff * diff)
+        return score
 
 
 
