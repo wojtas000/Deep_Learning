@@ -8,8 +8,8 @@ from torchvision.models import inception_v3
 from scipy.linalg import sqrtm
 import numpy as np
 from torchvision.transforms import ToTensor
-from vanillaGAN import VanillaGAN_Generator, VanillaGAN_Discriminator
 from scipy.linalg import sqrtm
+from torch.utils.data import DataLoader, Subset
 
 class GAN:
     
@@ -173,9 +173,6 @@ if __name__=="__main__":
     from vanillaGAN import VanillaGAN_Generator, VanillaGAN_Discriminator
     from torchvision.datasets import MNIST
     from torchvision.transforms import transforms
-    from torch.utils.data import DataLoader, Subset
-    import torch.optim as optim
-
 
     img_shape = (3, 256, 256)
     n_out = torch.prod(torch.tensor(img_shape))
