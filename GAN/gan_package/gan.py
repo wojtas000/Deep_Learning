@@ -1,5 +1,6 @@
 import torch.nn as nn
 import torch
+import torchvision
 from tqdm import tqdm
 import torch
 from torch import nn
@@ -7,6 +8,8 @@ from torchvision.models import inception_v3
 from scipy.linalg import sqrtm
 import numpy as np
 from torchvision.transforms import ToTensor
+from vanillaGAN import VanillaGAN_Generator, VanillaGAN_Discriminator
+from scipy.linalg import sqrtm
 
 class GAN:
     
@@ -69,6 +72,7 @@ class GAN:
     
 
     def train(self,
+              dataset,
               dataloader,
               discriminator_optimizer, 
               generator_optimizer,
@@ -107,7 +111,12 @@ class GAN:
                 d_losses += d_loss
             
             # Calculate FID score
-            fid_score = self.calculate_fid_score(real_images, fake_images, batch_size)
+            subset = Subset(dataset, np.random.choice(len(dataset), 100, replace=False))
+            dataloader = DataLoader(subset, batch_size=100, shuffle=True)
+            real_images = next(iter(dataloader))[0]
+            fake_images = gan.generator(torch.randn(100, 100))
+            fid_score = self.calculate_fid_score(real_images, fake_images)
+            
             self.history['fid_scores'].append(fid_score)
             self.history['g_losses'].append(g_losses/len(dataloader.dataset))
             self.history['d_losses'].append(d_losses/len(dataloader.dataset))
@@ -124,21 +133,16 @@ class GAN:
         torch.save(self.discriminator.state_dict(), path)
 
 
-    def calculate_fid_score(self, real_images, generated_images, batch_size):
+    def calculate_fid_score(self, real_images, generated_images):
 
-        # Convert images to PyTorch tensors
-        real_images = torch.stack([ToTensor()(img) for img in real_images])
-        generated_images = torch.stack([ToTensor()(img) for img in generated_images])
-
-        # Pass images through Inception model to get activations
-        real_activations = self.inception_model(real_images)[0].view(real_images.shape[0], -1)
-        generated_activations = self.inception_model(generated_images)[0].view(generated_images.shape[0], -1)
+        real_activations = self.inception_model(real_images).detach().numpy()
+        generated_activations = self.inception_model(generated_images).detach().numpy()
 
         # Compute mean and covariance of activations
-        real_mean = torch.mean(real_activations, dim=0)
-        real_cov = GAN.torch_cov(real_activations, rowvar=False)
-        generated_mean = torch.mean(generated_activations, dim=0)
-        generated_cov = GAN.torch_cov(generated_activations, rowvar=False)
+        real_mean = np.mean(real_activations, axis=0)
+        real_cov = GAN.cov(real_activations, rowvar=False)
+        generated_mean = np.mean(generated_activations, axis=0)
+        generated_cov = GAN.cov(generated_activations, rowvar=False)
 
         # Calculate FID score
         score = GAN.calculate_frechet_distance(real_mean, real_cov, generated_mean, generated_cov)
@@ -146,19 +150,20 @@ class GAN:
         return score
 
     @staticmethod
-    def torch_cov(x, rowvar=False):
-        mean = torch.mean(x, dim=0, keepdim=True)
+    def cov(x, rowvar=False):
+        print(x.shape)
+        mean = np.mean(x, axis=0)
         if rowvar:
-            cov = torch.matmul((x - mean).t(), x - mean) / (x.size(0) - 1)
+            cov = np.matmul((x - mean).T, x - mean) / (x.shape[0] - 1)
         else:
-            cov = torch.matmul((x - mean), (x - mean).t()) / (x.size(1) - 1)
+            cov = np.matmul((x - mean).T, x - mean) / (x.shape[1] - 1)
         return cov
 
     @staticmethod
     def calculate_frechet_distance(mu1, sigma1, mu2, sigma2):
         diff = mu1 - mu2
-        covmean, _ = torch.sqrtm(sigma1 @ sigma2, True)
-        score = torch.real(torch.trace(sigma1 + sigma2 - 2 * covmean)) + torch.sum(diff * diff)
+        covmean = sqrtm(sigma1.dot(sigma2))
+        score = np.real(np.trace(sigma1 + sigma2 - 2 * covmean)) + np.sum(diff * diff)
         return score
 
 
@@ -168,15 +173,16 @@ if __name__=="__main__":
     from vanillaGAN import VanillaGAN_Generator, VanillaGAN_Discriminator
     from torchvision.datasets import MNIST
     from torchvision.transforms import transforms
-    from torch.utils.data import DataLoader
+    from torch.utils.data import DataLoader, Subset
     import torch.optim as optim
 
 
-    img_shape = (1, 256, 256)
+    img_shape = (3, 256, 256)
     n_out = torch.prod(torch.tensor(img_shape))
     generator = VanillaGAN_Generator(latent_dim=100, img_shape=img_shape, n_out=n_out)
-    discriminator = VanillaGAN_Discriminator(img_shape=(1, 256, 256))
-    gan = GAN(generator=generator, discriminator=discriminator)
+    discriminator = VanillaGAN_Discriminator(img_shape=img_shape)
+    inception_model = inception_v3(pretrained=True, transform_input=False, aux_logits=True)
+    gan = GAN(generator=generator, discriminator=discriminator, inception_model=inception_model)
 
     discriminator_optimizer = torch.optim.Adam(discriminator.parameters(), lr=0.0002, betas=(0.5, 0.999))
     generator_optimizer = torch.optim.Adam(generator.parameters(), lr=0.0002, betas=(0.5, 0.999))
@@ -189,12 +195,22 @@ if __name__=="__main__":
         transforms.Normalize((0.5,), (0.5,))
     ])
 
-    dataset = MNIST(root='data', download=True, transform=transform)
-    dataloader = DataLoader(dataset, batch_size=64, shuffle=True)
+    image_size = 256
+    root = 'GAN/lsun/bedroom/0/0/'
+    dataset = torchvision.datasets.ImageFolder(root=root,
+                           transform=transforms.Compose([
+                               transforms.Resize(image_size),
+                               transforms.CenterCrop(image_size),
+                               transforms.ToTensor(),
+                               transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+                           ]))
+    # dataset = MNIST(root='data', download=True, transform=transform)
+    subset = Subset(dataset, np.random.choice(len(dataset), 100, replace=False))
+    dataloader = DataLoader(subset, batch_size=32, shuffle=True)
 
-    gan.train(dataloader=dataloader,
-                discriminator_optimizer=discriminator_optimizer,
-                generator_optimizer=generator_optimizer,
-                criterion=criterion,
-                num_epochs=100
-                )
+    gan.train(    dataset=dataset,
+                  dataloader=dataloader,
+                  discriminator_optimizer=discriminator_optimizer,
+                  generator_optimizer=generator_optimizer,
+                  criterion=criterion,
+                  num_epochs=5)
