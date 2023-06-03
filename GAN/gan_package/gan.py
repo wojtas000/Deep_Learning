@@ -114,7 +114,7 @@ class GAN:
             subset = Subset(dataset, np.random.choice(len(dataset), 100, replace=False))
             dataloader = DataLoader(subset, batch_size=100, shuffle=True)
             real_images = next(iter(dataloader))[0]
-            fake_images = gan.generator(torch.randn(100, 100))
+            fake_images = self.generator(torch.randn(100, 100))
             fid_score = self.calculate_fid_score(real_images, fake_images)
             
             self.history['fid_scores'].append(fid_score)
