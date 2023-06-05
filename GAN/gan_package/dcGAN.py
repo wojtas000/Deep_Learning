@@ -75,22 +75,15 @@ class DCGAN_Generator(nn.Module):
         self.num_channels = num_channels
         self.feature_maps_size = feature_maps_size
         self.model = nn.Sequential(
-            # input: latent_dim x 1 x 1
+            
             ConvTransposedBlock(latent_dim, feature_maps_size * 32, 4, 1, 0),
-            # (feature_maps_size*32) x 4 x 4
             ConvTransposedBlock(feature_maps_size * 32, feature_maps_size * 16, 4, 2, 1),
-            # (feature_maps_size*16) x 8 x 8
             ConvTransposedBlock(feature_maps_size * 16, feature_maps_size * 8, 4, 2, 1),
-            # (feature_maps_size*8) x 16 x 16
             ConvTransposedBlock(feature_maps_size * 8, feature_maps_size * 4, 4, 2, 1),
-            # (feature_maps_size*4) x 32 x 32
             ConvTransposedBlock(feature_maps_size * 4, feature_maps_size * 2, 4, 2, 1),
-            # (feature_maps_size*2) x 64 x 64
             ConvTransposedBlock(feature_maps_size * 2, feature_maps_size, 4, 2, 1),
-            # (feature_maps_size) x 128 x 128
             nn.ConvTranspose2d(feature_maps_size, num_channels, 4, 2, 1),
             nn.Tanh()
-            # (num_channels) x 256 x 256
         )
 
     def forward(self, input):

@@ -55,11 +55,11 @@ class VanillaGAN_Generator(nn.Module):
         self.img_shape = img_shape
         self.n_out = n_out
         self.model = nn.Sequential(
-            LinearBlock(latent_dim, 512, activation=nn.LeakyReLU(0.2), batch_norm=True),
-            LinearBlock(512, 2048, activation=nn.LeakyReLU(0.2), batch_norm=True),
-            LinearBlock(2048, 4096, activation=nn.LeakyReLU(0.2), batch_norm=True),
-            LinearBlock(4096, 10000, activation=nn.LeakyReLU(0.2), batch_norm=True),
-            LinearBlock(10000, torch.prod(torch.tensor(img_shape)), activation=nn.Tanh(), batch_norm=True)
+            LinearBlock(latent_dim, 256, activation=nn.LeakyReLU(0.2), batch_norm=False),
+            LinearBlock(256, 512, activation=nn.LeakyReLU(0.2), batch_norm=False),
+            LinearBlock(512, 1024, activation=nn.LeakyReLU(0.2), batch_norm=False),
+            LinearBlock(1024, 2048, activation=nn.LeakyReLU(0.2), batch_norm=False),
+            LinearBlock(2048, torch.prod(torch.tensor(img_shape)), activation=nn.Tanh(), batch_norm=False)
         )
 
     def forward(self, x):
