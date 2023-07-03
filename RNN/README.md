@@ -1,4 +1,10 @@
-# RNN directory structure
+# Recurrent Neural Networks
+
+This is the Recurrent Neural Network project from Deep Learning. 
+In this project we work on Tensorflow Speech Recognition challenge, coming from https://www.kaggle.com/competitions/tensorflow-speech-recognition-challenge. 
+Our goal is to explore RNN architectures, Transformers and select best performing models for speech detection.
+
+# Directory structure
 
 ## Folders:
 
