@@ -22,7 +22,8 @@ Here we provide detailed description of each respective file:
 10. `train_val_split.ipynb` - file containing method of splitting folder with Cifar-10 images into training and validation parts.
 
 Folders: 
-1. `ensemble_data` - containing predictions for ensemble models
-2. `saved_models` - containing parameters of saved Convolutional Neural Network models.
-3. `kaggle_submissions` - containing `.csv` files with predictions on testing data, prepared for Kaggle submission
-4. `training` - containing files used for training the CNNs.
+1. `report_and_presentation` - folder containing report and presentation of CNN project
+2. `ensemble_data` - containing predictions for ensemble models
+3. `saved_models` - containing parameters of saved Convolutional Neural Network models.
+4. `kaggle_submissions` - containing `.csv` files with predictions on testing data, prepared for Kaggle submission
+5. `training` - containing files used for training the CNNs.
