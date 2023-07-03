@@ -10,5 +10,5 @@ The repository is split into directories - each containing files for separate pr
 2. Tensorflow
 
 # Repository contributors:
-- Mikołaj Zalewski
 - Jan Wojtas
+- Mikołaj Zalewski
