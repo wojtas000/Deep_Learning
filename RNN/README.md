@@ -8,12 +8,13 @@ Our goal is to explore RNN architectures, Transformers and select best performin
 
 ## Folders:
 
-1. `extracted_features` - folder for preprocessed data - after VAD, padding, resampling and feature extraction
-2. `models` - folder with final models. The model which performed best on Kaggle is `best_gru_label_vs_unknown.h5`. We further build an ensemble with this model as base classifier and achieve even better score. The pre-trained models for ensemble are in `models\\ensemble` directory.
-3. `results` - folder with aggregated results from training
-4. `samples` - folder with samples from training data (original and processed)
-5. `submissions` - folder with saved submissions
-6. `Training` - folder with ipynb notebooks that were used to train models (grid search + random search)
+1. `report_and_presentation` - folder containing report and presentation of RNN project
+2. `extracted_features` - folder for preprocessed data - after VAD, padding, resampling and feature extraction
+3. `models` - folder with final models. The model which performed best on Kaggle is `best_gru_label_vs_unknown.h5`. We further build an ensemble with this model as base classifier and achieve even better score. The pre-trained models for ensemble are in `models\\ensemble` directory.
+4. `results` - folder with aggregated results from training
+5. `samples` - folder with samples from training data (original and processed)
+6. `submissions` - folder with saved submissions
+7. `Training` - folder with ipynb notebooks that were used to train models (grid search + random search)
 
 
 ## `.py` files:
