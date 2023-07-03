@@ -9,11 +9,14 @@ import torch.nn as nn
 import torchvision.models as models
 
 class ConvolutionalNeuralNetwork():
+
     """
     Master class for all Convolutional Neural Network models
     being instances of torch.nn.Module class.
     """
+
     def train_step(self, data, optimizer, criterion):
+
         """
         Args:
         data: (image, label) tuple.
@@ -22,6 +25,7 @@ class ConvolutionalNeuralNetwork():
         Returns:
         Dictionary containing training loss and accuracy. 
         """
+
         x, y = data
 
         optimizer.zero_grad()
@@ -37,6 +41,7 @@ class ConvolutionalNeuralNetwork():
 
     
     def test_step(self, data, criterion):
+
         """
         Args:
         data: (image, label) tuple.
@@ -45,6 +50,7 @@ class ConvolutionalNeuralNetwork():
         Returns:
         Dictionary containing testing/validation loss and accuracy. 
         """
+
         x, y = data
 
         logits = self(x)
@@ -54,6 +60,7 @@ class ConvolutionalNeuralNetwork():
         return {'loss': loss, 'accuracy': accuracy}
     
     def Conv2d_output_size(self, w, k, s, p):
+
         '''
         Method calculating output size of convolutional layer.
         w: width of input image.
@@ -63,6 +70,7 @@ class ConvolutionalNeuralNetwork():
         Returns:
         Output size of convolutional layer.
         '''
+
         return np.floor((w - k + 2 * p) / s + 1)
     
     def predict(self, x):
@@ -76,6 +84,7 @@ class ConvolutionalNeuralNetwork():
         return logits.argmax(dim=1)
     
     def prepare_submission(self, test_data=ds_own.cifar_test, dict=ds_own.CLASS_DICT):
+
         """
         Method used for preparing pandas.DataFrame instance for submission on Kaggle.
         Args:
@@ -102,7 +111,17 @@ class ConvolutionalNeuralNetwork():
         
         return submission
 
-class CNN_3_class(nn.Module, ConvolutionalNeuralNetwork):
+class Simple_CNN(nn.Module, ConvolutionalNeuralNetwork):
+
+    """
+    Class for specific Convolutional Neural Network architecture, having:
+    - 2 convolutional layers
+    - 2 pooling layers
+    - 2 fully connected layers
+    - dropout layer
+    - activation functions: ReLU
+    """
+
     def __init__(self, num_classes = 10
                 ,kernel_size1=3
                 ,kernel_size2=3
@@ -114,7 +133,8 @@ class CNN_3_class(nn.Module, ConvolutionalNeuralNetwork):
                 ,no_neurons = 500
                 ,dr=nn.Dropout(p=0)
                 ,activation_function=torch.relu):
-        super(CNN_3_class, self).__init__()
+        
+        super(Simple_CNN, self).__init__()
         self.conv1 = nn.Conv2d(3, number_of_filters0, kernel_size1, stride, padding)
         self.pool1 = nn.MaxPool2d(2)
         length0 = self.Conv2d_output_size(length_of_input0, kernel_size1, stride, padding)//2
@@ -136,9 +156,15 @@ class CNN_3_class(nn.Module, ConvolutionalNeuralNetwork):
         return x
 
 
-class MyCNN(nn.Module, ConvolutionalNeuralNetwork):
+class Complex_CNN(nn.Module, ConvolutionalNeuralNetwork):
+
+    """
+    Class for Convolutional Neural Network architecture, coming from https://arxiv.org/ftp/arxiv/papers/2003/2003.13300.pdf
+    """
+
     def __init__(self):
-        super(MyCNN, self).__init__()
+
+        super(Complex_CNN, self).__init__()
         self.conv1 = nn.Conv2d(in_channels=3, out_channels=736, kernel_size=3, padding=1)
         self.conv2 = nn.Conv2d(in_channels=736, out_channels=508, kernel_size=3, padding=1)
         self.maxpool1 = nn.MaxPool2d(kernel_size=2, stride=2)
@@ -152,6 +178,7 @@ class MyCNN(nn.Module, ConvolutionalNeuralNetwork):
         self.output = nn.Linear(in_features=1229, out_features=10)
 
     def forward(self, x):
+
         x = self.conv1(x)
         x = nn.functional.relu(x)
         x = self.conv2(x)
@@ -173,7 +200,13 @@ class MyCNN(nn.Module, ConvolutionalNeuralNetwork):
         x = self.output(x)
         return x
 
+
 class PretrainedAlexNet(nn.Module, ConvolutionalNeuralNetwork):
+
+    """
+    CLass used for loading pretrained AlexNet model from torchvision.models.
+    """
+
     def __init__(self, num_classes=10, pretrained=True):
         super().__init__()
 

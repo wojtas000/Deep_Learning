@@ -8,10 +8,11 @@ from torch.optim.lr_scheduler import StepLR
 import datasets
 from weighted_random_search import wrs
 from tqdm import tqdm
-from CNNpy import CNN_3_class
+from cnn_models import Simple_CNN
 
 
 class Net_wrapper:
+
     """ 
     Wrapper for neural network model. It combines the model itself (nn.Module) together with
     optimizer, learning rate scheduler, loss function and other
@@ -20,7 +21,7 @@ class Net_wrapper:
     running `score` method. Compatible with grid search and random search classes.
     """
         
-    def __init__(self, model=CNN_3_class, criterion=nn.CrossEntropyLoss(), optimizer=optim.Adam, weight_decay = 0,
+    def __init__(self, model=Simple_CNN, criterion=nn.CrossEntropyLoss(), optimizer=optim.Adam, weight_decay = 0,
                  max_epochs=5, batch_size=32, learning_rate=0.001, step_size=10, gamma=0.5, **kwargs):
         """
         Args:
@@ -37,6 +38,7 @@ class Net_wrapper:
                   attribute in model. For example, if model has attribute 'number_of_filters', the passed parameter should 
                   have the exact same name, 'number of filters'.
         """
+
         if kwargs:
             self.model_params = kwargs
         else:
@@ -55,6 +57,7 @@ class Net_wrapper:
         self.__dict__[name] = value
 
     def score(self, train_dataset, val_dataset, verbose=0):
+
         """
         Method implementing forward-backward propagation loop and computing accuracy on training and validation sets.
         Args:
@@ -64,6 +67,7 @@ class Net_wrapper:
         Returns:
         Training accuracy, training loss, validation accuracy and validation loss after full training. 
         """
+
         if self.model_params:
             model = self.model(**self.model_params)
             
@@ -141,9 +145,11 @@ class Net_wrapper:
 
 
 class RandomSearch:
+
     """
     Class implementing classic random search over the space of parameters.
     """
+
     def __init__(self, net: Net_wrapper, param_grid, verbose=1):
       """
       Args:
@@ -162,12 +168,14 @@ class RandomSearch:
      
     @staticmethod
     def choose_random__params(parameters, seed=1):
+      
       """
       Helper function used for choosing parameter set at random.
       Args:
       parameters: parameter dictionary.
       seed: seed of random state.
       """
+
       random_params = {}
       rnd = np.random.RandomState(seed)
       
@@ -184,6 +192,7 @@ class RandomSearch:
 
       
     def fit(self, train_dataset, val_dataset, n_trials = 10):
+      
       """
       Fit the random search with train and validation dataset. 
       Search for optimal parameters for neural network declared during 
@@ -218,9 +227,11 @@ class RandomSearch:
 
 
 class GridSearch:
+
     """
     Class used to perform grid search on set of parameters. 
     """
+
     def __init__(self, net: Net_wrapper, param_grid, step_by_step=False, verbose=1):
         """
         Args:
@@ -297,6 +308,7 @@ class GridSearch:
     
 
 class WeightedRandomSearch():
+
     """
     Class used to perform weighted random search on neural networks.
     Not completed - unable to use fANOVA package. 
@@ -309,6 +321,7 @@ class WeightedRandomSearch():
     self.best_params - best set of parameters
     self.verbose - if set to 1 additional information (parameter set and accuracy) prints with each iteration of grid search. 
     """
+
     def __init__(self, net, param_grid, verbose=1):
         """
         Args:
@@ -324,11 +337,13 @@ class WeightedRandomSearch():
         self.verbose = verbose
 
     def fit(self, train_dataset, val_dataset, N, N_0):
+
         """
         Fit the grid search with train and validation dataset. 
         Search for optimal parameters for neural network declared during 
         initialization of GridSearch instance.
         """
+
         def goal_function(params):
             
             for hyp_name, hyp_val in params.items():
@@ -357,7 +372,7 @@ if __name__=="__main__":
     subset_val_dataset = Subset(val_dataset, subset_indices)
 
     test_hyper_params = {'learning_rate': [0.0001, 0.0005, 0.001, 0.005, 0.01], 'batch_size': [8, 16, 32, 64, 128]}
-    my_net = Net_wrapper(model=CNN_3_class, max_epochs=5)
+    my_net = Net_wrapper(model=Simple_CNN, max_epochs=5)
     
     gs = GridSearch(net=my_net, param_grid=test_hyper_params, step_by_step=True, verbose=1)
     gs = gs.fit(subset_train_dataset, subset_val_dataset)
